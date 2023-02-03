@@ -26,11 +26,15 @@ public class weaponscript : MonoBehaviour
     private TextMeshProUGUI reserveCountText;
     private void Awake()
     {
-        
+        GameObject _UI = GameObject.FindGameObjectWithTag("UI");
+        ammoCountText = _UI.transform.Find("Ammo").transform.Find("AmmoCount").GetComponent<TextMeshProUGUI>();
+        reserveCountText = _UI.transform.Find("Ammo").transform.Find("ReserveCount").GetComponent<TextMeshProUGUI>();
     }
 
     private void Update()
     {
+        ammoCountText.text = ammo.ToString();
+        reserveCountText.text = reserveAmmo.ToString();
         if (weaponTimer <= 0.0f)
         {
             //can shoot yessir!
@@ -44,7 +48,7 @@ public class weaponscript : MonoBehaviour
 
         if (Input.GetButtonDown("Fire1"))
         {
-            if (canShoot == true)
+            if (canShoot == true && ammo > 0)
             {
                 print("bang!");
                 shoot();  
@@ -53,16 +57,25 @@ public class weaponscript : MonoBehaviour
 
         if (Input.GetKeyDown(KeyCode.R))
         {
-            if (maxAmmo == ammo && canOverfill == true)
+            if (maxAmmo == ammo && canOverfill == true && reserveAmmo > 0)
             {
                 ammo += 1;
+                reserveAmmo -= 1;
             }
             else
             {
-                if (reserveAmmo > 0)
+                if (reserveAmmo > 0 && ammo != maxAmmo + 1)
                 {
-                    ammo = maxAmmo;
-                    reserveAmmo -= maxAmmo;
+                    if(reserveAmmo < maxAmmo)
+                    {
+                        ammo = reserveAmmo;
+                        reserveAmmo = 0;
+                    }
+                    else
+                    {
+                        ammo = maxAmmo;
+                        reserveAmmo -= maxAmmo;
+                    }
                 }
             }
         }
