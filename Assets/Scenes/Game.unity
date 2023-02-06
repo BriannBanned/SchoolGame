@@ -133,6 +133,7 @@ GameObject:
   m_Component:
   - component: {fileID: 41766529}
   - component: {fileID: 41766530}
+  - component: {fileID: 41766531}
   m_Layer: 0
   m_Name: Arms
   m_TagString: Untagged
@@ -178,6 +179,21 @@ Animator:
   m_HasTransformHierarchy: 1
   m_AllowConstantClipSamplingOptimization: 1
   m_KeepAnimatorControllerStateOnDisable: 0
+--- !u!111 &41766531
+Animation:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 41766528}
+  m_Enabled: 1
+  serializedVersion: 3
+  m_Animation: {fileID: 0}
+  m_Animations: []
+  m_WrapMode: 0
+  m_PlayAutomatically: 1
+  m_AnimatePhysics: 0
+  m_CullingType: 0
 --- !u!1 &178046451
 GameObject:
   m_ObjectHideFlags: 0
@@ -644,6 +660,18 @@ PrefabInstance:
       propertyPath: m_Name
       value: colt
       objectReference: {fileID: 0}
+    - target: {fileID: 7682190177408928268, guid: a97cd3c72b880dc4cac6086a682f9ef7, type: 3}
+      propertyPath: m_LocalRotation.w
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 7682190177408928268, guid: a97cd3c72b880dc4cac6086a682f9ef7, type: 3}
+      propertyPath: m_LocalRotation.y
+      value: -1
+      objectReference: {fileID: 0}
+    - target: {fileID: 7682190177408928268, guid: a97cd3c72b880dc4cac6086a682f9ef7, type: 3}
+      propertyPath: m_LocalEulerAnglesHint.y
+      value: -180
+      objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: a97cd3c72b880dc4cac6086a682f9ef7, type: 3}
 --- !u!4 &246693515 stripped
@@ -678,7 +706,7 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 568244304}
   m_LocalRotation: {x: 0.038307637, y: 0.13689893, z: -0.046585396, w: 0.98874724}
-  m_LocalPosition: {x: -0.103, y: -0.264, z: 0.697}
+  m_LocalPosition: {x: -0.10268758, y: -0.26390895, z: 0.6959197}
   m_LocalScale: {x: 0.2, y: 0.2, z: 1.2}
   m_ConstrainProportionsScale: 0
   m_Children: []
@@ -1085,7 +1113,7 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 910979114}
   m_LocalRotation: {x: 0.04562849, y: -0.17125244, z: -0.052946076, w: 0.9827448}
-  m_LocalPosition: {x: 0.232, y: -0.296, z: 0.765}
+  m_LocalPosition: {x: 0.23180558, y: -0.29498574, z: 0.7667825}
   m_LocalScale: {x: 0.2, y: 0.2, z: 1.2}
   m_ConstrainProportionsScale: 0
   m_Children: []

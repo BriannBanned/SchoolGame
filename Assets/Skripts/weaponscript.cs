@@ -24,8 +24,11 @@ public class weaponscript : MonoBehaviour
     private float weaponTimer = 0f;
     private TextMeshProUGUI ammoCountText;
     private TextMeshProUGUI reserveCountText;
+
+    private Animation anim;
     private void Awake()
     {
+        anim = transform.parent.GetComponent<Animation>(); //be careful this is sketchy so is everything below
         GameObject _UI = GameObject.FindGameObjectWithTag("UI");
         ammoCountText = _UI.transform.Find("Ammo").transform.Find("AmmoCount").GetComponent<TextMeshProUGUI>();
         reserveCountText = _UI.transform.Find("Ammo").transform.Find("ReserveCount").GetComponent<TextMeshProUGUI>();
@@ -57,36 +60,47 @@ public class weaponscript : MonoBehaviour
 
         if (Input.GetKeyDown(KeyCode.R))
         {
-            if (maxAmmo == ammo && canOverfill == true && reserveAmmo > 0)
-            {
-                ammo += 1;
-                reserveAmmo -= 1;
-            }
-            else
-            {
-                if (reserveAmmo > 0 && ammo != maxAmmo + 1)
-                {
-                    if(reserveAmmo < maxAmmo)
-                    {
-                        ammo = reserveAmmo;
-                        reserveAmmo = 0;
-                    }
-                    else
-                    {
-                        ammo = maxAmmo;
-                        reserveAmmo -= maxAmmo;
-                    }
-                }
-            }
+            reload();
         }
     }
 
     public void shoot()
     {
+        anim.Stop();
+        if (anim.GetClip("gunShoot") != null)
+        {
+            anim.RemoveClip("gunShoot");
+        }
+        anim.clip = gunShoot;
+        anim.AddClip(gunShoot, "gunShoot");
+        anim.Play();
         weaponTimer = weaponShootCoolDown;
         ammo -= 1;
     }
-
+    public void reload()
+    {
+        if (maxAmmo == ammo && canOverfill == true && reserveAmmo > 0)
+        {
+            ammo += 1;
+            reserveAmmo -= 1;
+        }
+        else
+        {
+            if (reserveAmmo > 0 && ammo != maxAmmo + 1)
+            {
+                if (reserveAmmo < maxAmmo)
+                {
+                    ammo = reserveAmmo;
+                    reserveAmmo = 0;
+                }
+                else
+                {
+                    ammo = maxAmmo;
+                    reserveAmmo -= maxAmmo;
+                }
+            }
+        }
+    }
 
 
 }

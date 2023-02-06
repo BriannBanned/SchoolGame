@@ -211,6 +211,17 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 80534cf453f48564589b7b5a985e9a3f, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  weaponid: 
+  ammo: 0
+  maxAmmo: 0
+  reserveAmmo: 0
+  maxReserveAmmo: 0
+  canOverfill: 0
+  gunIdle: {fileID: 0}
+  gunShoot: {fileID: 0}
+  gunReload: {fileID: 0}
+  isSelected: 0
+  weaponShootCoolDown: 0
 --- !u!1 &1748277932983872
 GameObject:
   m_ObjectHideFlags: 0
