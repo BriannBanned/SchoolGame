@@ -1,10 +1,12 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.Linq;
 using TMPro;
 using Unity.VisualScripting;
 using UnityEngine;
 using UnityEngine.UI;
+using Random = System.Random;
 
 public class weaponscript : MonoBehaviour
 {
@@ -19,15 +21,22 @@ public class weaponscript : MonoBehaviour
     public AnimationClip gunReload;
     public bool isSelected = false;
     public float weaponShootCoolDown;
-
+    public AudioClip[] gunShotSounds = new AudioClip[] { };
+    public AudioClip gunReloadSound;
+    public bool isAutomatic = false;
+    public bool ignoreAnimations;
+    public Vector3 spawnOffset;
+    
     private bool canShoot = true;
     private float weaponTimer = 0f;
     private TextMeshProUGUI ammoCountText;
     private TextMeshProUGUI reserveCountText;
 
     private Animation anim;
+    private AudioSource audSauce;
     private void Awake()
     {
+        audSauce = GetComponent<AudioSource>();
         anim = transform.parent.GetComponent<Animation>(); //be careful this is sketchy so is everything below
         GameObject _UI = GameObject.FindGameObjectWithTag("UI");
         ammoCountText = _UI.transform.Find("Ammo").transform.Find("AmmoCount").GetComponent<TextMeshProUGUI>();
@@ -49,36 +58,83 @@ public class weaponscript : MonoBehaviour
             weaponTimer -= Time.deltaTime;
         }
 
-        if (Input.GetButtonDown("Fire1"))
+        if (!isAutomatic)
         {
-            if (canShoot == true && ammo > 0)
+            if (Input.GetButtonDown("Fire1"))
             {
-                print("bang!");
-                shoot();  
+                if (canShoot == true && ammo > 0 && !anim.IsPlaying("gunReload"))
+                {
+                    print("bang!");
+                    shoot();
+                }
+            }
+        }
+        else
+        {
+            if (Input.GetButton("Fire1"))
+            {
+                if (canShoot == true && ammo > 0 && !anim.IsPlaying("gunReload"))
+                {
+                    print("bang!");
+                    shoot();
+                }
             }
         }
 
+
         if (Input.GetKeyDown(KeyCode.R))
         {
-            reload();
+            if (!anim.IsPlaying("gunReload"))
+            {
+                reload();
+            }
         }
     }
 
     public void shoot()
     {
-        anim.Stop();
-        if (anim.GetClip("gunShoot") != null)
+        if (ignoreAnimations == false)
         {
-            anim.RemoveClip("gunShoot");
+            audSauce.PlayOneShot(gunShotSounds[UnityEngine.Random.Range(0, gunShotSounds.Count())]);
+            audSauce.Play();
+            anim.Stop();
+            if (anim.GetClip("gunShoot") != null)
+            {
+                anim.RemoveClip("gunShoot");
+            }
+            anim.clip = gunShoot;
+            anim.AddClip(gunShoot, "gunShoot");
+            anim.Play();  
         }
-        anim.clip = gunShoot;
-        anim.AddClip(gunShoot, "gunShoot");
-        anim.Play();
         weaponTimer = weaponShootCoolDown;
         ammo -= 1;
     }
     public void reload()
     {
+        if (ammo > maxAmmo)
+        {
+            return;
+        }
+        else if(canOverfill == false && ammo == maxAmmo)
+        {
+            return;
+        }
+
+        if (ignoreAnimations == false)
+        {
+            audSauce.PlayOneShot(gunReloadSound);
+            print("hi");
+            anim.Stop();
+            if (anim.GetClip("gunReload") != null)
+            {
+                anim.RemoveClip("gunReload");
+            }
+
+            anim.clip = gunReload;
+            anim.AddClip(gunReload, "gunReload");
+            anim.Play();
+        }
+
         if (maxAmmo == ammo && canOverfill == true && reserveAmmo > 0)
         {
             ammo += 1;
@@ -101,6 +157,4 @@ public class weaponscript : MonoBehaviour
             }
         }
     }
-
-
 }
