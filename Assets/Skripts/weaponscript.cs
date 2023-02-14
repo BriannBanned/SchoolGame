@@ -151,8 +151,8 @@ public class weaponscript : MonoBehaviour
                 }
                 else
                 {
+                    reserveAmmo -= maxAmmo - ammo;
                     ammo = maxAmmo;
-                    reserveAmmo -= maxAmmo;
                 }
             }
         }

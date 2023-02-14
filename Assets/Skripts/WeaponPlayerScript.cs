@@ -42,7 +42,7 @@ public class WeaponPlayerScript : MonoBehaviour
 
         if (Input.GetKeyDown(KeyCode.G))
         {
-            switchWeapon(1,"colt");
+            switchWeapon(1,"ak47");
         }
     }
 
@@ -52,48 +52,55 @@ public class WeaponPlayerScript : MonoBehaviour
         {
             case 1:
                 primary = toWhat;
-                instWeapon(toWhat, whichWeapon);
+                if (selectedWeapon == 1)
+                {
+                    putAwayWeapon(1);
+                }
+                primaryObject = Arms.transform.Find(toWhat).gameObject;
+                if (selectedWeapon == 1)
+                {
+                    bringOutWeapon(1);
+                }
                 break;
             case 2:
                 secondary = toWhat;
-                instWeapon(toWhat, whichWeapon);
+                if (selectedWeapon == 2)
+                {
+                    putAwayWeapon(2);
+                }
+                secondaryObject = Arms.transform.Find(toWhat).gameObject;
+                if (selectedWeapon == 2)
+                {
+                    bringOutWeapon(2);
+                }
                 break;
         }
         {
             
         }
     }
-
-    public void instWeapon(string toWhat, int which)
+    public void putAwayWeapon(int weapon) // use both of these because put away animations and bring out animations might exist soon idk
     {
-        GameObject _instPrefab = null;
-        print("GOING TO RUN THE LOOP NOW");
-        for (int i = 0; i < weapons.Length; i++)
-        {
-            print("runnin loop");
-            print(i);
-            print(weapons[i].name);
-            if (weapons[i].name == toWhat)
-            {
-                _instPrefab = weapons[i];
-                print("set now");
-                break;
-            }
-        }
-        print("isnt");
-        GameObject newWeapon =  Instantiate(_instPrefab, Arms.transform.position, Quaternion.Euler(Arms.transform.parent.eulerAngles.x,-180,Arms.transform.parent.eulerAngles.z), Arms.transform);
-        newWeapon.transform.localPosition += newWeapon.GetComponent<weaponscript>().spawnOffset;
-        switch (which)
+        switch (weapon)
         {
             case 1:
-                Destroy(primaryObject);
-                primary = toWhat;
-                primaryObject = newWeapon;
+                primaryObject.SetActive(false);
                 break;
             case 2:
-                Destroy(secondaryObject);
-                secondary = toWhat;
-                secondaryObject = newWeapon;
+                secondaryObject.SetActive(false);
+                break;
+        }
+    }
+
+    public void bringOutWeapon(int weapon)
+    {
+        switch (weapon)
+        {
+            case 1:
+                primaryObject.SetActive(true);
+                break;
+            case 2:
+                secondaryObject.SetActive(true);
                 break;
         }
     }
