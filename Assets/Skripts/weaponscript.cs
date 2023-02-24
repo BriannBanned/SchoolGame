@@ -3,12 +3,13 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using TMPro;
+using Unity.Netcode;
 using Unity.VisualScripting;
 using UnityEngine;
 using UnityEngine.UI;
 using Random = System.Random;
 
-public class weaponscript : MonoBehaviour
+public class weaponscript : NetworkBehaviour
 {
     public string weaponid;
     public int ammo;
@@ -45,6 +46,7 @@ public class weaponscript : MonoBehaviour
 
     private void Update()
     {
+        if (!IsOwner) return;
         ammoCountText.text = ammo.ToString();
         reserveCountText.text = reserveAmmo.ToString();
         if (weaponTimer <= 0.0f)

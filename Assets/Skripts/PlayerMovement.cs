@@ -1,7 +1,8 @@
 using System.Collections;
 using System.Collections.Generic;
+using Unity.Netcode;
 using UnityEngine;
-public class PlayerMovement : MonoBehaviour
+public class PlayerMovement : NetworkBehaviour
 {
     CharacterController controller;
 
@@ -18,18 +19,22 @@ public class PlayerMovement : MonoBehaviour
 
     Vector3 velocity;
 
+    [SerializeField] private GameObject playerCamera;
+
     public float gravity = -19.62f;
 
     void Start()
     {
         controller = GetComponent<CharacterController>();
         Debug.Log("player movement started wooow yoay oawolk");
+        if (!IsOwner) return;
+        playerCamera.SetActive(true);
     }
 
 
     void Update()
     {
-
+        if (!IsOwner) return;
         isGrounded = Physics.CheckSphere(groundCheck.position, groundDistance, groundMask);
 
         if (isGrounded == true && velocity.y < 0)
