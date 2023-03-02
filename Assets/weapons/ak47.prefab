@@ -182,21 +182,18 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 80534cf453f48564589b7b5a985e9a3f, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  weaponid: ak47
-  ammo: 30
-  maxAmmo: 30
-  reserveAmmo: 100
-  maxReserveAmmo: 100
+  weaponID: 
+  ammo:
+    m_InternalValue: 0
+  maxAmmo:
+    m_InternalValue: 0
+  reserveAmmo:
+    m_InternalValue: 0
   canOverfill: 1
-  gunIdle: {fileID: 0}
-  gunShoot: {fileID: 0}
-  gunReload: {fileID: 0}
-  isSelected: 0
-  weaponShootCoolDown: 0.08
-  gunShotSounds: []
-  gunReloadSound: {fileID: 0}
   isAutomatic: 1
-  ignoreAnimations: 1
+  timerGun: 0
+  textReserve: {fileID: 0}
+  textAmmo: {fileID: 0}
 --- !u!1 &5255239979460770022
 GameObject:
   m_ObjectHideFlags: 0

@@ -7,8 +7,7 @@ public class LookingAround : NetworkBehaviour
 {
     public float Msensitivity = 500f;
     public Transform lebody;
-    [SerializeField] private Transform arms;
-    [SerializeField] private Transform playerCamera;
+    [SerializeField] private Transform playerCameraMove;
 
     public static bool locklook = false;
     
@@ -24,7 +23,6 @@ public class LookingAround : NetworkBehaviour
         if (!IsOwner) return;
         if(locklook == false)
         {
-            print("ran");
             float mouseX = Input.GetAxis("Mouse X") * Msensitivity * Time.deltaTime;
             float mouseY = Input.GetAxis("Mouse Y") * Msensitivity * Time.deltaTime;
 
@@ -33,8 +31,7 @@ public class LookingAround : NetworkBehaviour
             xRotation -= mouseY;
             xRotation = Mathf.Clamp(xRotation, -90f, 90f);
 
-            playerCamera.localRotation = Quaternion.Euler(xRotation, 0f, 0f);
-            arms.localRotation = Quaternion.Euler(xRotation, 0f, 0f);
+            playerCameraMove.localRotation = Quaternion.Euler(xRotation, 0f, 0f);
         }
     }
 }

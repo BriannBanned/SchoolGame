@@ -11,7 +11,95 @@ using Random = System.Random;
 
 public class weaponscript : NetworkBehaviour
 {
-    public string weaponid;
+    [SerializeField] public string weaponID;
+    [SerializeField] private NetworkVariable<int> ammo = new NetworkVariable<int>(0);
+    [SerializeField] private NetworkVariable<int> maxAmmo = new NetworkVariable<int>(0);
+    [SerializeField] private NetworkVariable<int> reserveAmmo = new NetworkVariable<int>(0);
+    [SerializeField] private bool canOverfill;
+    [SerializeField] private bool isAutomatic;
+    //internal junk
+    [SerializeField] private float timerGun;
+    [SerializeField] private TextMeshProUGUI textReserve;
+    [SerializeField] private TextMeshProUGUI textAmmo;
+
+    private void Start()
+    {
+        gameObject.SetActive(true);
+        if (!IsOwner) return;
+        GameObject _UI = GameObject.FindGameObjectWithTag("UI");
+        textAmmo = _UI.transform.Find("Ammo").transform.Find("AmmoCount").GetComponent<TextMeshProUGUI>();
+        textReserve = _UI.transform.Find("Ammo").transform.Find("ReserveCount").GetComponent<TextMeshProUGUI>();
+    }
+
+    private void Update()
+    {
+        if (!IsOwner) return;
+        if (textAmmo != null)
+        {
+            textAmmo.text = ammo.Value.ToString();
+            textReserve.text = reserveAmmo.Value.ToString();
+        }
+        else
+        {
+            print("its null");
+        }
+        if (Input.GetButtonDown("Fire1"))
+        {
+            //fire gun
+            shootServerRPC();
+        }
+        if (Input.GetKeyDown(KeyCode.R))
+        {
+            //reload
+            reloadGunServerRPC();
+        }
+    }
+
+    [ServerRpc]
+    public void shootServerRPC()
+    {
+        if (ammo.Value >= 1)
+        {
+            ammo.Value--;
+        }
+    }
+    [ServerRpc]
+    public void reloadGunServerRPC()
+    {
+        print("reload");
+        ammo.Value = maxAmmo.Value;
+        if (ammo.Value > maxAmmo.Value)
+        {
+            return;
+        }
+        else if(canOverfill == false && ammo.Value == maxAmmo.Value)
+        {
+            return;
+        }
+
+        if (maxAmmo.Value == ammo.Value && canOverfill == true && reserveAmmo.Value > 0)
+        {
+            ammo.Value += 1;
+            reserveAmmo.Value -= 1;
+        }
+        else
+        {
+            if (reserveAmmo.Value > 0 && ammo.Value != maxAmmo.Value + 1)
+            {
+                if (reserveAmmo.Value < maxAmmo.Value)
+                {
+                    ammo.Value = reserveAmmo.Value;
+                    reserveAmmo.Value = 0;
+                }
+                else
+                {
+                    reserveAmmo.Value -= maxAmmo.Value - ammo.Value;
+                    ammo.Value = maxAmmo.Value;
+                }
+            }
+        }
+    }
+    /*public string weaponid;
     public int ammo;
     public int maxAmmo;
     public int reserveAmmo;
@@ -37,6 +125,7 @@ public class weaponscript : NetworkBehaviour
     private AudioSource audSauce;
     private void Awake()
     {
+        if (!IsOwner) return;
         audSauce = GetComponent<AudioSource>();
         anim = transform.parent.GetComponent<Animation>(); //be careful this is sketchy so is everything below
         GameObject _UI = GameObject.FindGameObjectWithTag("UI");
@@ -47,6 +136,7 @@ public class weaponscript : NetworkBehaviour
     private void Update()
     {
         if (!IsOwner) return;
+        print("ran");
         ammoCountText.text = ammo.ToString();
         reserveCountText.text = reserveAmmo.ToString();
         if (weaponTimer <= 0.0f)
@@ -59,7 +149,7 @@ public class weaponscript : NetworkBehaviour
             canShoot = false;
             weaponTimer -= Time.deltaTime;
         }
-
+        
         if (!isAutomatic)
         {
             if (Input.GetButtonDown("Fire1"))
@@ -158,5 +248,5 @@ public class weaponscript : NetworkBehaviour
                 }
             }
         }
-    }
+    }*/
 }
