@@ -1,8 +1,9 @@
 using System.Collections;
 using System.Collections.Generic;
+using Unity.Netcode;
 using UnityEngine;
 
-public class WeaponPlayerScript : MonoBehaviour
+public class WeaponPlayerScript : NetworkBehaviour
 {
 
     public string primary = "nil";
@@ -20,24 +21,22 @@ public class WeaponPlayerScript : MonoBehaviour
         primary = "m48";
         secondary = "colt";
         secondaryObject = Arms.transform.Find("colt").gameObject;
-        primaryObject = Arms.transform.Find("m48").gameObject;
+        //primaryObject = Arms.transform.Find("m48").gameObject;
+        secondaryObject.SetActive(true);
     }
 
     // Update is called once per frame
     void Update()
     {
+        if (!IsOwner) return;
         if(Input.GetKeyDown(KeyCode.Alpha1) && primary != "null")
         {
-            selectedWeapon = 1;
-            secondaryObject.SetActive(false);
-            primaryObject.SetActive(true);
+            switchPlayerWeaponServerRPC(1);
         }
 
         if (Input.GetKeyDown(KeyCode.Alpha2) && secondary != "null")
         {
-            selectedWeapon = 2;
-            secondaryObject.SetActive(true);
-            primaryObject.SetActive(false);
+            switchPlayerWeaponServerRPC(2);
         }
 
         if (Input.GetKeyDown(KeyCode.G))
@@ -46,6 +45,42 @@ public class WeaponPlayerScript : MonoBehaviour
         }
     }
 
+    [ServerRpc]
+    public void switchPlayerWeaponServerRPC(int slot)
+    {
+        switch (slot)
+        {
+            case 1:
+                secondaryObject.SetActive(false);
+                primaryObject.SetActive(true);
+                selectedWeapon = 1;
+                break;
+            case 2:
+                secondaryObject.SetActive(true);
+                primaryObject.SetActive(false);
+                selectedWeapon = 2;
+                break;
+        }
+        switchPlayerWeaponClientRPC(slot);
+    }
+
+    [ClientRpc]
+    public void switchPlayerWeaponClientRPC(int slot)
+    {
+        switch (slot)
+        {
+            case 1:
+                secondaryObject.SetActive(false);
+                primaryObject.SetActive(true);
+                selectedWeapon = 1;
+                break;
+            case 2:
+                secondaryObject.SetActive(true);
+                primaryObject.SetActive(false);
+                selectedWeapon = 2;
+                break;
+        }
+    }
     public void switchWeapon(int whichWeapon, string toWhat)
     {
         switch (whichWeapon)
@@ -79,6 +114,7 @@ public class WeaponPlayerScript : MonoBehaviour
             
         }
     }
+    
     public void putAwayWeapon(int weapon) // use both of these because put away animations and bring out animations might exist soon idk
     {
         switch (weapon)

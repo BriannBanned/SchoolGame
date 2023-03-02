@@ -60,7 +60,6 @@ public class PlayerMovement : NetworkBehaviour
         }
         controller.Move(velocity * Time.deltaTime);
 
-
     }
 
 
