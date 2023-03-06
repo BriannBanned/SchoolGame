@@ -17,10 +17,12 @@ public class weaponscript : NetworkBehaviour
     [SerializeField] private NetworkVariable<int> reserveAmmo = new NetworkVariable<int>(0);
     [SerializeField] private bool canOverfill;
     [SerializeField] private bool isAutomatic;
+    [SerializeField] private float weaponCoolDown;
     //internal junk
-    [SerializeField] private float timerGun;
-    [SerializeField] private TextMeshProUGUI textReserve;
-    [SerializeField] private TextMeshProUGUI textAmmo;
+    private bool canShoot = true;
+    private float timerGun;
+    private TextMeshProUGUI textReserve;
+    private TextMeshProUGUI textAmmo;
 
     private void Start()
     {
@@ -33,19 +35,32 @@ public class weaponscript : NetworkBehaviour
 
     private void Update()
     {
-        if (!IsOwner) return;
+        if (timerGun <= 0.0f)
+        {
+            //can shoot yessir!
+            canShoot = true;
+        }
+        else
+        {
+            canShoot = false;
+            timerGun -= Time.deltaTime;
+        }
+        //On Everyone ^^^
+        if (!IsOwner) return; // anything ran before this line of code is ran on all clients but after its only ran on the person who owns it.
+        //On owner VVV
         if (textAmmo != null)
         {
             textAmmo.text = ammo.Value.ToString();
             textReserve.text = reserveAmmo.Value.ToString();
-        }
-        else
-        {
-            print("its null");
-        }
-        if (Input.GetButtonDown("Fire1"))
+        }   
+        if(isAutomatic == true && Input.GetButton("Fire1") && canShoot == true){
+            print("attempted tautoo fire weapoin" + weaponID);
+            shootServerRPC();
+        }     
+        else if (Input.GetButtonDown("Fire1") && canShoot == true)
         {
             //fire gun
+            print("attempted to fire weapoin" + weaponID);
             shootServerRPC();
         }
         if (Input.GetKeyDown(KeyCode.R))
@@ -58,16 +73,17 @@ public class weaponscript : NetworkBehaviour
     [ServerRpc]
     public void shootServerRPC()
     {
+        print("bang!!" + weaponID);
         if (ammo.Value >= 1)
         {
             ammo.Value--;
+            timerGun = weaponCoolDown;
         }
     }
     [ServerRpc]
     public void reloadGunServerRPC()
     {
         print("reload");
-        ammo.Value = maxAmmo.Value;
         if (ammo.Value > maxAmmo.Value)
         {
             return;
@@ -77,7 +93,7 @@ public class weaponscript : NetworkBehaviour
             return;
         }
 
-        if (maxAmmo.Value == ammo.Value && canOverfill == true && reserveAmmo.Value > 0)
+        if (maxAmmo.Value == ammo.Value && canOverfill == true && reserveAmmo.Value > 0)  
         {
             ammo.Value += 1;
             reserveAmmo.Value -= 1;
