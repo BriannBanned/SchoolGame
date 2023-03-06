@@ -11,7 +11,7 @@ public class WeaponPlayerScript : NetworkBehaviour
     public GameObject primaryObject = null;
     public GameObject secondaryObject = null;
     public GameObject Arms;
-    public int selectedWeapon = 1;
+    public int selectedWeapon = 2;
 
     public GameObject[] weapons = new GameObject[] { };
     // Start is called before the first frame update
@@ -21,8 +21,17 @@ public class WeaponPlayerScript : NetworkBehaviour
         primary = "m48";
         secondary = "colt";
         secondaryObject = Arms.transform.Find("colt").gameObject;
-        //primaryObject = Arms.transform.Find("m48").gameObject;
+        primaryObject = Arms.transform.Find("ak74").gameObject;
         secondaryObject.SetActive(true);
+        switch(selectedWeapon){
+            case 1:
+            secondaryObject.SetActive(false);
+            break;
+
+            case 2:
+            primaryObject.SetActive(false);
+            break;
+        }
     }
 
     // Update is called once per frame
