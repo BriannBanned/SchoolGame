@@ -7,8 +7,7 @@ public class PlayerStatsScript : NetworkBehaviour
 {
     [SerializeField] private NetworkVariable<int> playerHealth = new NetworkVariable<int>(100);
 
-    [ServerRpc]
-    public void takeDamageServerRPC()
+    public void takeDamage()
     {
         print("taking some damage m8!!!!");
         playerHealth.Value -= 10;

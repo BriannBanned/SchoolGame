@@ -91,7 +91,7 @@ public class weaponscript : NetworkBehaviour
                 if(hit.collider.tag == "Player")
                 {
                     print("hit player!");
-                    hit.collider.GetComponent<PlayerStatsScript>().takeDamageServerRPC();
+                    hit.collider.GetComponent<PlayerStatsScript>().takeDamage();
                 }
                 print(hit.collider.gameObject.name);
             }
