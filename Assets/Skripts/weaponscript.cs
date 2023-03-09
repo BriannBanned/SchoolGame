@@ -23,6 +23,7 @@ public class weaponscript : NetworkBehaviour
     private float timerGun;
     private TextMeshProUGUI textReserve;
     private TextMeshProUGUI textAmmo;
+    private Transform cameraTrans;
 
     private void Start()
     {
@@ -31,6 +32,7 @@ public class weaponscript : NetworkBehaviour
         GameObject _UI = GameObject.FindGameObjectWithTag("UI");
         textAmmo = _UI.transform.Find("Ammo").transform.Find("AmmoCount").GetComponent<TextMeshProUGUI>();
         textReserve = _UI.transform.Find("Ammo").transform.Find("ReserveCount").GetComponent<TextMeshProUGUI>();
+        cameraTrans = transform.parent.parent.Find("Main Camera");
     }
 
     private void Update()
@@ -78,6 +80,21 @@ public class weaponscript : NetworkBehaviour
         {
             ammo.Value--;
             timerGun = weaponCoolDown;
+            RaycastHit hit;
+            
+            // Does the ray intersect any objects excluding the player layer
+            int mask = 1 << 5;
+            mask = ~mask;
+            if (Physics.Raycast(cameraTrans.position, cameraTrans.TransformDirection(Vector3.forward), out hit, Mathf.Infinity, mask))
+            {
+                Debug.DrawRay(cameraTrans.position, cameraTrans.TransformDirection(Vector3.forward) * hit.distance, Color.yellow);
+                if(hit.collider.tag == "Player")
+                {
+                    print("hit player!");
+                    hit.collider.GetComponent<PlayerStatsScript>().takeDamageServerRPC();
+                }
+                print(hit.collider.gameObject.name);
+            }
         }
     }
     [ServerRpc]
