@@ -18,21 +18,22 @@ public class weaponscript : NetworkBehaviour
     [SerializeField] private bool canOverfill;
     [SerializeField] private bool isAutomatic;
     [SerializeField] private float weaponCoolDown;
+    [SerializeField] private int weaponDamage;
     //internal junk
     private bool canShoot = true;
     private float timerGun;
     private TextMeshProUGUI textReserve;
     private TextMeshProUGUI textAmmo;
-    private Transform cameraTrans;
+    [SerializeField] private Transform cameraTrans;
 
     private void Start()
     {
         gameObject.SetActive(true);
-        if (!IsOwner) return;
+        cameraTrans = transform.parent.parent.Find("Main Camera");
+        if (!IsOwner) return; //this remember this crappy code VVVVV owner ^^^^^ everyone (camera wanst being set on all players so the players wont take damage because a raycast was impossible)
         GameObject _UI = GameObject.FindGameObjectWithTag("UI");
         textAmmo = _UI.transform.Find("Ammo").transform.Find("AmmoCount").GetComponent<TextMeshProUGUI>();
         textReserve = _UI.transform.Find("Ammo").transform.Find("ReserveCount").GetComponent<TextMeshProUGUI>();
-        cameraTrans = transform.parent.parent.Find("Main Camera");
     }
 
     private void Update()
@@ -82,16 +83,16 @@ public class weaponscript : NetworkBehaviour
             timerGun = weaponCoolDown;
             RaycastHit hit;
             
-            // Does the ray intersect any objects excluding the player layer
+            // Does the ray intersect any objects excluding the player layer (i dunno maybe/??)
             int mask = 1 << 5;
             mask = ~mask;
-            if (Physics.Raycast(cameraTrans.position, cameraTrans.TransformDirection(Vector3.forward), out hit, Mathf.Infinity, mask))
+            if (Physics.Raycast(cameraTrans.position, cameraTrans.TransformDirection(Vector3.forward), out hit, Mathf.Infinity, mask)) //here error why what is going on (i found out its some thing owner everyone not being set)
             {
                 Debug.DrawRay(cameraTrans.position, cameraTrans.TransformDirection(Vector3.forward) * hit.distance, Color.yellow);
                 if(hit.collider.tag == "Player")
                 {
                     print("hit player!");
-                    hit.collider.GetComponent<PlayerStatsScript>().takeDamage();
+                    hit.collider.GetComponent<PlayerStatsScript>().takeDamage(weaponDamage);
                 }
                 print(hit.collider.gameObject.name);
             }

@@ -2,9 +2,7 @@
 <project version="4">
   <component name="ChangeListManager">
     <list default="true" id="68ff3d07-0db4-46bb-bf41-142534165999" name="Default Changelist" comment="">
-      <change beforePath="$PROJECT_DIR$/.idea/.idea.Project/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/.idea.Project/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/Skripts/PlayerStatsScript.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/Skripts/PlayerStatsScript.cs" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/Skripts/weaponscript.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/Skripts/weaponscript.cs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/UserSettings/Layouts/default-2021.dwlt" beforeDir="false" afterPath="$PROJECT_DIR$/UserSettings/Layouts/default-2021.dwlt" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -72,6 +70,7 @@
       <updated>1678385179973</updated>
       <workItem from="1678385185942" duration="10000" />
       <workItem from="1678388592042" duration="57000" />
+      <workItem from="1678813774012" duration="5000" />
     </task>
     <servers />
   </component>
