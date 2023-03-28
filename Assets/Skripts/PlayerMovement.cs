@@ -20,6 +20,7 @@ public class PlayerMovement : NetworkBehaviour
     Vector3 velocity;
 
     [SerializeField] private GameObject playerCamera;
+    [SerializeField] private PlayerStatsScript playerStatsScript;
 
     public float gravity = -19.62f;
 
@@ -35,6 +36,7 @@ public class PlayerMovement : NetworkBehaviour
     void Update()
     {
         if (!IsOwner) return;
+
         isGrounded = Physics.CheckSphere(groundCheck.position, groundDistance, groundMask);
 
         if (isGrounded == true && velocity.y < 0)
@@ -49,6 +51,11 @@ public class PlayerMovement : NetworkBehaviour
         }
         float x = Input.GetAxis("Horizontal");
         float z = Input.GetAxis("Vertical");
+        if(playerStatsScript.isPlayerDead.Value){ //i cant just return out of this for some reason because the character goes flying idk?!?!?!
+            speed = 0f;
+            velocity.y = 0f;
+        }
+
         Vector3 move = transform.right * x + transform.forward * z;
         controller.Move(move * speed * Time.deltaTime);
 
