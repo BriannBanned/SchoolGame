@@ -8,6 +8,7 @@ public class LookingAround : NetworkBehaviour
     public float Msensitivity = 500f;
     public Transform lebody;
     [SerializeField] private Transform playerCameraMove;
+    [SerializeField] private PlayerStatsScript playerStats;
 
     public static bool locklook = false;
     
@@ -21,7 +22,7 @@ public class LookingAround : NetworkBehaviour
     void Update()
     {
         if (!IsOwner) return;
-        if(locklook == false)
+        if(locklook == false || playerStats.isPlayerDead.Value)
         {
             float mouseX = Input.GetAxis("Mouse X") * Msensitivity * Time.deltaTime;
             float mouseY = Input.GetAxis("Mouse Y") * Msensitivity * Time.deltaTime;

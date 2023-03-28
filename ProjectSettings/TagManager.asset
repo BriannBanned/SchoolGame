@@ -5,6 +5,9 @@ TagManager:
   serializedVersion: 2
   tags:
   - UI
+  - TeamUI
+  - Env
+  - DeathCameras
   layers:
   - Default
   - TransparentFX

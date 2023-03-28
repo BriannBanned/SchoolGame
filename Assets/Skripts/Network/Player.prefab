@@ -382,6 +382,7 @@ MonoBehaviour:
     serializedVersion: 2
     m_Bits: 8
   playerCamera: {fileID: 5748428116537046492}
+  playerStatsScript: {fileID: 7640483093869767341}
   gravity: -19.62
 --- !u!54 &5748428116531391886
 Rigidbody:
@@ -436,6 +437,7 @@ MonoBehaviour:
   Msensitivity: 500
   lebody: {fileID: 5748428116531391887}
   playerCameraMove: {fileID: 1382810418926236566}
+  playerStats: {fileID: 7640483093869767341}
 --- !u!114 &9127310485199808262
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -490,10 +492,20 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: d0319a75504f0754b9292169faf5a354, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  arms: {fileID: 5748428116621694509}
+  capsule: {fileID: 5748428116767321545}
+  camera: {fileID: 5748428116537046492}
   playerHealth:
     m_InternalValue: 100
+  isPlayerDead:
+    m_InternalValue: 0
+  respawnTimer: 10
+  cameraSwitchTimer: 2
   healthText: {fileID: 1504916363240666882}
   playerIDText: {fileID: 3947936749523814799}
+  teamName: noTeam
+  empButton: {fileID: 0}
+  ceoButton: {fileID: 0}
 --- !u!1 &5748428116537046492
 GameObject:
   m_ObjectHideFlags: 0
