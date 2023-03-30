@@ -24,6 +24,7 @@ public class PlayerStatsScript : NetworkBehaviour
     private int deathCameraInt = 0;
     public TMP_Text healthText;
     public TMP_Text playerIDText;
+    public TMP_Text teamIdText;
     public string teamName = "noTeam";
     
 
@@ -47,8 +48,9 @@ public class PlayerStatsScript : NetworkBehaviour
 
         GameObject _UI = GameObject.FindGameObjectWithTag("UI");
         GameObject _TeamUI = GameObject.FindGameObjectWithTag("TeamUI");
-        ceoButton = _TeamUI.transform.Find("CEOButton").GetComponent<Button>();
+        print(_TeamUI + " timeam ui");
         empButton = _TeamUI.transform.Find("EmployeeButton").GetComponent<Button>();
+        ceoButton = _TeamUI.transform.Find("CEOButton").GetComponent<Button>();
         if(IsOwner  ){
             print("yes");
         }
@@ -76,11 +78,11 @@ public class PlayerStatsScript : NetworkBehaviour
 
   private void Update() {
 
+        teamIdText.text = teamName;
 
 
-
-    //timer stuff
-        if(playerHealth.Value <= 0 && isPlayerDead.Value == false){
+        //timer stuff
+        if (playerHealth.Value <= 0 && isPlayerDead.Value == false){
             playerDeathServerRpc();
             if (IsOwner)
             {
@@ -97,9 +99,13 @@ public class PlayerStatsScript : NetworkBehaviour
         }
         healthText.text = playerHealth.Value.ToString();
         if(Input.GetKeyDown(KeyCode.K)){
-            takeDamage(10);
+            Cursor.lockState = CursorLockMode.None;
         }
-        if(!IsOwner) return;
+        if (Input.GetKeyDown(KeyCode.J))
+        {
+            Cursor.lockState = CursorLockMode.Locked;
+        }
+        if (!IsOwner) return;
         
         if(isPlayerDead.Value){
             cameraPrivate -= 1f * Time.deltaTime;
@@ -113,6 +119,15 @@ public class PlayerStatsScript : NetworkBehaviour
                 print("undead");
                 deathCameras[deathCameraInt].SetActive(false);
                 camera.SetActive(true);
+                switch (teamName)
+                {
+                    case "ceo":
+                        transform.position = GameObject.FindGameObjectWithTag("Env").GetComponent<EnvScript>().ceoRespawnLocations[Random.Range(0, GameObject.FindGameObjectWithTag("Env").GetComponent<EnvScript>().ceoRespawnLocations.Count - 1)].transform.position;  //probably not optimzed or whatever but did i ask?
+                        break;
+                    case "emp":
+                        transform.position = GameObject.FindGameObjectWithTag("Env").GetComponent<EnvScript>().empRespawnLocations[Random.Range(0, GameObject.FindGameObjectWithTag("Env").GetComponent<EnvScript>().empRespawnLocations.Count - 1)].transform.position;  //probably not optimzed or whatever but did i ask?
+                        break;
+                }
                 playerUnDeathServerRpc();
                 print(isPlayerDead.Value);
             }
@@ -134,6 +149,7 @@ public class PlayerStatsScript : NetworkBehaviour
     [ServerRpc]
     void playerDeathServerRpc()
     {
+        print("ran serverpc t");
         isPlayerDead.Value = true;
         arms.SetActive(false);
         capsule.SetActive(false);
@@ -141,7 +157,7 @@ public class PlayerStatsScript : NetworkBehaviour
     }
     [ClientRpc]
     void playerDeathClientRpc(){
-        isPlayerDead.Value = true;
+        print("ran client t");
         arms.SetActive(false);
         capsule.SetActive(false);
     }
@@ -153,11 +169,11 @@ public class PlayerStatsScript : NetworkBehaviour
         arms.SetActive(true);
         capsule.SetActive(true);
         playerUnDeathClientRpc();
+        
     }
 
     [ClientRpc]
     void playerUnDeathClientRpc(){
-        isPlayerDead.Value = false;
         arms.SetActive(true);
         capsule.SetActive(true);
     }

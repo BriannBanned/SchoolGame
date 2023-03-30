@@ -25,11 +25,13 @@ public class weaponscript : NetworkBehaviour
     private TextMeshProUGUI textReserve;
     private TextMeshProUGUI textAmmo;
     [SerializeField] private Transform cameraTrans;
+    [SerializeField] private PlayerStatsScript playerStats;
 
     private void Start()
     {
         gameObject.SetActive(true);
         cameraTrans = transform.parent.parent.Find("Main Camera");
+        playerStats = transform.parent.parent.parent.GetComponent<PlayerStatsScript>();
         if (!IsOwner) return; //this remember this crappy code VVVVV owner ^^^^^ everyone (camera wanst being set on all players so the players wont take damage because a raycast was impossible)
         GameObject _UI = GameObject.FindGameObjectWithTag("UI");
         textAmmo = _UI.transform.Find("Ammo").transform.Find("AmmoCount").GetComponent<TextMeshProUGUI>();
@@ -57,13 +59,11 @@ public class weaponscript : NetworkBehaviour
             textReserve.text = reserveAmmo.Value.ToString();
         }   
         if(isAutomatic == true && Input.GetButton("Fire1") && canShoot == true){
-            print("attempted tautoo fire weapoin" + weaponID);
             shootServerRPC();
         }     
         else if (Input.GetButtonDown("Fire1") && canShoot == true)
         {
             //fire gun
-            print("attempted to fire weapoin" + weaponID);
             shootServerRPC();
         }
         if (Input.GetKeyDown(KeyCode.R))
@@ -92,6 +92,11 @@ public class weaponscript : NetworkBehaviour
                 if(hit.collider.tag == "Player")
                 {
                     print("hit player!");
+                    if (hit.collider.GetComponent<PlayerStatsScript>().teamName == playerStats.teamName && playerStats.teamName != "noTeam")
+                    {
+                        print("nope firendlyfire!");
+                        return; //dont do friendlyfire!
+                    }
                     hit.collider.GetComponent<PlayerStatsScript>().takeDamage(weaponDamage);
                 }
                 print(hit.collider.gameObject.name);
