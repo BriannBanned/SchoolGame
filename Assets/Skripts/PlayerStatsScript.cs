@@ -28,7 +28,7 @@ public class PlayerStatsScript : NetworkBehaviour
     public string teamName = "noTeam";
     
 
-    //ui creap doign erso quicky speed of light
+    //ui creap doign erso quicky speed of light funni stat script
 
     public Button empButton;
     public Button ceoButton;
