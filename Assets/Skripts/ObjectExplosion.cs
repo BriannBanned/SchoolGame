@@ -18,9 +18,9 @@ public class ObjectExplosion : NetworkBehaviour
         if(objectHealth.Value <= 0 ){
             explosiveDamage.Value = explosiveDamage.Value - objectHealth.Value;
             Explode(explosiveDamage.Value);
-            GameObject.Destroy(explosive);
             ParticleSystem explodePart = explosive.GetComponent<ParticleSystem>();
             explodePart.Play();
+            GameObject.Destroy(explosive);
         }
     }
     // Start is called before the first frame update
