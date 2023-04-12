@@ -99,6 +99,10 @@ public class weaponscript : NetworkBehaviour
                     }
                     hit.collider.GetComponent<PlayerStatsScript>().takeDamage(weaponDamage);
                 }
+                if(hit.collider.tag == "Explosive")
+                {
+                    hit.collider.GetComponent<ObjectExplosion>().takeDamage(weaponDamage);
+                }
                 print(hit.collider.gameObject.name);
             }
         }

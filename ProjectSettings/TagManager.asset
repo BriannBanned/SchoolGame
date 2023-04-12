@@ -8,6 +8,7 @@ TagManager:
   - TeamUI
   - Env
   - DeathCameras
+  - Explosive
   layers:
   - Default
   - TransparentFX
