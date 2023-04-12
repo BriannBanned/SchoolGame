@@ -9,6 +9,7 @@ TagManager:
   - Env
   - DeathCameras
   - Explosive
+  - Destructible
   layers:
   - Default
   - TransparentFX

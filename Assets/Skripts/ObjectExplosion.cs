@@ -8,7 +8,7 @@ using TMPro;
 public class ObjectExplosion : NetworkBehaviour
 {
     [SerializeField] private NetworkVariable<int> objectHealth = new NetworkVariable<int>(20);
-    [SerializeField] private NetworkVariable<int> explosiveDamage = new NetworkVariable<int>(35);
+    [SerializeField] private NetworkVariable<int> explosiveDamage = new NetworkVariable<int>(50);
     [SerializeField] private NetworkVariable<int> explosiveRadius = new NetworkVariable<int>(5);
     private GameObject explosive;
 
@@ -41,12 +41,16 @@ public class ObjectExplosion : NetworkBehaviour
         Collider[] explodeColliders = Physics.OverlapSphere(explosive.transform.position, explosiveRadius.Value);
         foreach (var explodeCollider in explodeColliders) {
             if(explodeCollider.transform.GetComponent<Collider>().tag == "Player" || explodeCollider.transform.GetComponent<Collider>().tag == "Destructible") {
-                print(explodeCollider);
                 Vector3 dir = (explosive.transform.position - explodeCollider.transform.position).normalized;
                 float dist = Vector3.Distance(explosive.transform.position, explodeCollider.transform.position);
-                if(Physics.Raycast(explosive.transform.position, dir, dist - 2f) == false) {
+                if(Physics.Raycast(explosive.transform.position, dir, dist - 0.5f) == false) {
                     int disDa = Mathf.FloorToInt(dist);
-                    explodeCollider.transform.GetComponent<Collider>().GetComponent<PlayerStatsScript>().takeDamage(explosiveDamage - disDa);
+                    if(explodeCollider.transform.GetComponent<Collider>().tag == "Player") {
+                        explodeCollider.transform.GetComponent<Collider>().GetComponent<PlayerStatsScript>().takeDamage(explosiveDamage - disDa);
+                    }
+                    if(explodeCollider.transform.GetComponent<Collider>().tag == "Destructible") {
+                        explodeCollider.transform.GetComponent<Collider>().GetComponent<ObjectStatScript>().takeDamage(explosiveDamage - disDa);
+                    }
                 }
             }
         }
