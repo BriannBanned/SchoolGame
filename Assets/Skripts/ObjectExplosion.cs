@@ -8,17 +8,19 @@ using TMPro;
 public class ObjectExplosion : NetworkBehaviour
 {
     [SerializeField] private NetworkVariable<int> objectHealth = new NetworkVariable<int>(20);
-    [SerializeField] private NetworkVariable<int> explosiveDamage = new NetworkVariable<int>(50);
+    [SerializeField] private NetworkVariable<int> explosiveDamage = new NetworkVariable<int>(35);
     [SerializeField] private NetworkVariable<int> explosiveRadius = new NetworkVariable<int>(5);
-    public GameObject explosive;
+    private GameObject explosive;
 
     public void takeDamage(int damage) {
+        explosive = transform.gameObject;
         print("Kaboom?");
         objectHealth.Value -= damage;
         if(objectHealth.Value <= 0 ){
             explosiveDamage.Value = explosiveDamage.Value - objectHealth.Value;
             Explode(explosiveDamage.Value);
-            ParticleSystem explodePart = explosive.GetComponent<ParticleSystem>();
+            ParticleSystem explodePart = GameObject.Find("ExplosionManager").GetComponent<ParticleSystem>();
+            explodePart.transform.position = explosive.transform.position;
             explodePart.Play();
             GameObject.Destroy(explosive);
         }
