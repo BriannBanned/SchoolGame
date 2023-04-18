@@ -19,7 +19,7 @@ public class ObjectExplosion : NetworkBehaviour
         if(objectHealth.Value <= 0 ){
             explosiveDamage.Value = explosiveDamage.Value - objectHealth.Value;
             Explode(explosiveDamage.Value);
-            ParticleSystem explodePart = GameObject.Find("ExplosionManager").GetComponent<ParticleSystem>();
+            ParticleSystem explodePart = GameObject.Find("ExplosionParticle").GetComponent<ParticleSystem>();
             explodePart.transform.position = explosive.transform.position;
             explodePart.Play();
             GameObject.Destroy(explosive);
