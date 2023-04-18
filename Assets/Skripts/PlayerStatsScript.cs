@@ -26,12 +26,16 @@ public class PlayerStatsScript : NetworkBehaviour
     public TMP_Text playerIDText;
     public TMP_Text teamIdText;
     public string teamName = "noTeam";
+    public string className = "noClass";
     
 
     //ui creap doign erso quicky speed of light funni stat script
 
     public Button empButton;
     public Button ceoButton;
+    public Button heavyButton;
+    public Button midButton;
+    public Button lightButton;
 
     public void takeDamage(int damage)
     {
@@ -48,9 +52,13 @@ public class PlayerStatsScript : NetworkBehaviour
 
         GameObject _UI = GameObject.FindGameObjectWithTag("UI");
         GameObject _TeamUI = GameObject.FindGameObjectWithTag("TeamUI");
+        GameObject _ClassUI = GameObject.FindGameObjectWithTag("ClassScreen");
         print(_TeamUI + " timeam ui");
         empButton = _TeamUI.transform.Find("EmployeeButton").GetComponent<Button>();
         ceoButton = _TeamUI.transform.Find("CEOButton").GetComponent<Button>();
+        heavyButton = _ClassUI.transform.Find("HeavyButton").GetComponent<Button>();
+        midButton = _ClassUI.transform.Find("MidButton").GetComponent<Button>();
+        lightButton = _ClassUI.transform.Find("LightButton").GetComponent<Button>();
         if(IsOwner  ){
             print("yes");
         }
@@ -60,20 +68,36 @@ public class PlayerStatsScript : NetworkBehaviour
         if(!IsOwner) return;
         empButton.onClick.AddListener(() => switchTeams("emp"));
         ceoButton.onClick.AddListener(() => switchTeams("ceo"));
+        heavyButton.onClick.AddListener(() => switchClass("heavy"));
+        midButton.onClick.AddListener(() => switchClass("medium"));
+        lightButton.onClick.AddListener(() => switchClass("light"));
     }
     
     void switchTeams(string teamSet){
         print("is eine running");
         switchServerRPC(teamSet);
     }
+    void switchClass(string classSet){
+        print("swapped class??!");
+        switchClassServerRPC(classSet);
+    }
     [ServerRpc(RequireOwnership = false)]
     void switchServerRPC(string teamSet){
         teamName = teamSet;
         switchClientRPC(teamSet);
     }
+    [ServerRpc(RequireOwnership = false)]
+    void switchClassServerRPC(string classSet){
+        className = classSet;
+        switchClassClientRPC(classSet);
+    }
     [ClientRpc]
     void switchClientRPC(string teamSet){
         teamName = teamSet;
+    }
+    [ClientRpc]
+    void switchClassClientRPC(string classSet){
+        className = classSet;
     }
 
   private void Update() {
