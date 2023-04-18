@@ -66,20 +66,22 @@ public class PlayerStatsScript : NetworkBehaviour
             print("no");
         }
         if(!IsOwner) return;
-        empButton.onClick.AddListener(() => switchTeams("emp"));
-        ceoButton.onClick.AddListener(() => switchTeams("ceo"));
-        heavyButton.onClick.AddListener(() => switchClass("heavy"));
-        midButton.onClick.AddListener(() => switchClass("medium"));
-        lightButton.onClick.AddListener(() => switchClass("light"));
+        empButton.onClick.AddListener(() => switchTeams("emp", _TeamUI));
+        ceoButton.onClick.AddListener(() => switchTeams("ceo", _TeamUI));
+        heavyButton.onClick.AddListener(() => switchClass("heavy", _ClassUI));
+        midButton.onClick.AddListener(() => switchClass("medium", _ClassUI));
+        lightButton.onClick.AddListener(() => switchClass("light", _ClassUI));
     }
     
-    void switchTeams(string teamSet){
+    void switchTeams(string teamSet, GameObject _TeamUI){
         print("is eine running");
         switchServerRPC(teamSet);
+        _TeamUI.SetActive(false);
     }
-    void switchClass(string classSet){
+    void switchClass(string classSet, GameObject _ClassUI){
         print("swapped class??!");
         switchClassServerRPC(classSet);
+        _ClassUI.SetActive(false);
     }
     [ServerRpc(RequireOwnership = false)]
     void switchServerRPC(string teamSet){
