@@ -553,6 +553,7 @@ MonoBehaviour:
   groundMask:
     serializedVersion: 2
     m_Bits: 8
+  isImobile: 1
   playerCamera: {fileID: 5748428116537046492}
   playerStatsScript: {fileID: 7640483093869767341}
   gravity: -19.62
@@ -669,10 +670,13 @@ MonoBehaviour:
   camera: {fileID: 5748428116537046492}
   playerHealth:
     m_InternalValue: 100
+  maxPlayerHealth: 100
   isPlayerDead:
     m_InternalValue: 0
   respawnTimer: 10
   cameraSwitchTimer: 2
+  playerClass:
+    m_InternalValue: 0
   healthText: {fileID: 1504916363240666882}
   playerIDText: {fileID: 3947936749523814799}
   teamIdText: {fileID: 2903487458607140487}
@@ -1569,6 +1573,10 @@ MonoBehaviour:
   weaponDamage: 5
   cameraTrans: {fileID: 0}
   playerStats: {fileID: 0}
+  gunShoot: {fileID: 0}
+  gunIdle: {fileID: 0}
+  gunReload: {fileID: 0}
+  reloadTime: 0
 --- !u!4 &2548433244348358859 stripped
 Transform:
   m_CorrespondingSourceObject: {fileID: 3387101358929902773, guid: 42557dcf53adcf54d8e8d5981b76da5b, type: 3}
@@ -1586,9 +1594,17 @@ PrefabInstance:
       value: 8
       objectReference: {fileID: 0}
     - target: {fileID: 4366009787172196973, guid: a97cd3c72b880dc4cac6086a682f9ef7, type: 3}
+      propertyPath: gunIdle
+      value: 
+      objectReference: {fileID: 7400000, guid: df33d486b4ff4b94f88ae15fe61be9aa, type: 2}
+    - target: {fileID: 4366009787172196973, guid: a97cd3c72b880dc4cac6086a682f9ef7, type: 3}
       propertyPath: maxAmmo
       value: 7
       objectReference: {fileID: 0}
+    - target: {fileID: 4366009787172196973, guid: a97cd3c72b880dc4cac6086a682f9ef7, type: 3}
+      propertyPath: gunShoot
+      value: 
+      objectReference: {fileID: 7400000, guid: 24fe33a8cb89a014aa4b87c7fbc69bb1, type: 2}
     - target: {fileID: 4366009787172196973, guid: a97cd3c72b880dc4cac6086a682f9ef7, type: 3}
       propertyPath: weaponID
       value: colt
@@ -1596,6 +1612,14 @@ PrefabInstance:
     - target: {fileID: 4366009787172196973, guid: a97cd3c72b880dc4cac6086a682f9ef7, type: 3}
       propertyPath: weaponid
       value: colt
+      objectReference: {fileID: 0}
+    - target: {fileID: 4366009787172196973, guid: a97cd3c72b880dc4cac6086a682f9ef7, type: 3}
+      propertyPath: gunReload
+      value: 
+      objectReference: {fileID: 7400000, guid: b2f0988a12226364b9554085581a9408, type: 2}
+    - target: {fileID: 4366009787172196973, guid: a97cd3c72b880dc4cac6086a682f9ef7, type: 3}
+      propertyPath: reloadTime
+      value: 1.2
       objectReference: {fileID: 0}
     - target: {fileID: 4366009787172196973, guid: a97cd3c72b880dc4cac6086a682f9ef7, type: 3}
       propertyPath: canOverfill
@@ -1676,6 +1700,18 @@ PrefabInstance:
     - target: {fileID: 5567732294002393307, guid: a97cd3c72b880dc4cac6086a682f9ef7, type: 3}
       propertyPath: m_LocalEulerAnglesHint.z
       value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 5567744719813222293, guid: a97cd3c72b880dc4cac6086a682f9ef7, type: 3}
+      propertyPath: m_LocalPosition.x
+      value: -0
+      objectReference: {fileID: 0}
+    - target: {fileID: 5567744719813222293, guid: a97cd3c72b880dc4cac6086a682f9ef7, type: 3}
+      propertyPath: m_LocalPosition.y
+      value: 0.008086923
+      objectReference: {fileID: 0}
+    - target: {fileID: 5567744719813222293, guid: a97cd3c72b880dc4cac6086a682f9ef7, type: 3}
+      propertyPath: m_LocalPosition.z
+      value: -0.13872743
       objectReference: {fileID: 0}
     - target: {fileID: 5571817405460750543, guid: a97cd3c72b880dc4cac6086a682f9ef7, type: 3}
       propertyPath: m_Name
