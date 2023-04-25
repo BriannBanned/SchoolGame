@@ -15,7 +15,7 @@ public class LookingAround : NetworkBehaviour
     float xRotation = 0f;
     void Start()
     {
-        Cursor.lockState = CursorLockMode.Locked;
+        
     }
 
     // Update is called once per frame

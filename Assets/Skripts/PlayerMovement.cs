@@ -7,7 +7,7 @@ public class PlayerMovement : NetworkBehaviour
     CharacterController controller;
 
     public float speed = 10f;
-    public float walkSpeed = 8f;
+    public float walkSpeed = 8;
     public float runSpeed = 15f;
 
     public float jumpheight = 3f;
@@ -16,6 +16,7 @@ public class PlayerMovement : NetworkBehaviour
     public float groundDistance = 0.4f;
     public LayerMask groundMask;
     bool isGrounded;
+    public bool isImobile = true;
 
     Vector3 velocity;
 
@@ -28,14 +29,43 @@ public class PlayerMovement : NetworkBehaviour
     {
         controller = GetComponent<CharacterController>();
         Debug.Log("player movement started wooow yoay oawolk");
+        transform.position = new Vector3(0, 1000, 0);
         if (!IsOwner) return;
         playerCamera.SetActive(true);
-        
+
     }
 
+    public void gotoPosition(Vector3 newPos)
+    {
+        print(newPos);
+        transform.position = newPos;
+    }
 
     void Update()
     {
+        switch (gameObject.GetComponent<PlayerStatsScript>().playerClass.Value)
+        {
+            case 1: //light
+                walkSpeed = 12.5f;
+                runSpeed = 15.5f;
+                jumpheight = 3.2f;
+                playerStatsScript.maxPlayerHealth = 75;
+                break;
+            case 2: //balanced
+                walkSpeed = 10f;
+                runSpeed = 14f;
+                playerStatsScript.maxPlayerHealth = 100; //could mess with items that affect health (might wanna get this out of update or smth.)
+                break;
+            case 3: //heavy
+                walkSpeed = 7f;
+                runSpeed = 12.5f;
+                playerStatsScript.maxPlayerHealth = 200;
+                break;
+        }
+        if (isImobile)
+        {
+            return;
+        }
         if (!IsOwner) return;
 
         isGrounded = Physics.CheckSphere(groundCheck.position, groundDistance, groundMask);
