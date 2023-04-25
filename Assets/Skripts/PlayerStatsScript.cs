@@ -34,9 +34,10 @@ public class PlayerStatsScript : NetworkBehaviour
     //disableenable
     
     public void flipCharacter(bool flip){
-            arms.SetActive(flip);
-            capsule.SetActive(flip);
-            camera.SetActive(flip);
+        arms.SetActive(flip);
+        capsule.SetActive(flip);
+        camera.SetActive(flip);
+        GameManager.crossHair.SetActive(flip);
     }
     
 
