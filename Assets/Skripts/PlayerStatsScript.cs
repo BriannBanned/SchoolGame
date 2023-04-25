@@ -13,12 +13,14 @@ public class PlayerStatsScript : NetworkBehaviour
     [SerializeField] private GameObject arms;
     [SerializeField] private GameObject capsule;
     [SerializeField] private GameObject camera;
-    [SerializeField] public NetworkVariable<int> playerHealth = new NetworkVariable<int>(100);
+    [SerializeField] public NetworkVariable<float> playerHealth = new NetworkVariable<float>(100);
+    public float maxPlayerHealth = 100f;
     [SerializeField] public NetworkVariable<bool> isPlayerDead = new NetworkVariable<bool>(false);
     [SerializeField] private float respawnTimer;
     private float respawnPrivate;
     [SerializeField] private float cameraSwitchTimer;
     private float  cameraPrivate;
+    public NetworkVariable<int> playerClass = new NetworkVariable<int>(0);
 
     private List<GameObject> deathCameras = new List<GameObject>();
     private int deathCameraInt = 0;
@@ -26,9 +28,19 @@ public class PlayerStatsScript : NetworkBehaviour
     public TMP_Text playerIDText;
     public TMP_Text teamIdText;
     public string teamName = "noTeam";
+    //clas vars
+    private gameManagerScript GameManager;
+
+    //disableenable
+    
+    public void flipCharacter(bool flip){
+            arms.SetActive(flip);
+            capsule.SetActive(flip);
+            camera.SetActive(flip);
+    }
     
 
-    //ui creap doign erso quicky speed of light funni stat script
+    //ui creap doign erso quicky speed of light
 
     public Button empButton;
     public Button ceoButton;
@@ -44,6 +56,9 @@ public class PlayerStatsScript : NetworkBehaviour
 
     private void Start()
     {
+        GameManager = GameObject.FindGameObjectWithTag("GameManager").GetComponent<gameManagerScript>();
+        hideRevealClass(true); //class thingy
+        flipCharacter(false);
         playerIDText.text = gameObject.GetComponent<NetworkObject>().NetworkObjectId.ToString();
 
         GameObject _UI = GameObject.FindGameObjectWithTag("UI");
@@ -60,6 +75,9 @@ public class PlayerStatsScript : NetworkBehaviour
         if(!IsOwner) return;
         empButton.onClick.AddListener(() => switchTeams("emp"));
         ceoButton.onClick.AddListener(() => switchTeams("ceo"));
+        GameManager.lightButton.GetComponent<Button>().onClick.AddListener(() => selectClass(1));
+        GameManager.heavyButton.GetComponent<Button>().onClick.AddListener(() => selectClass(3));
+        GameManager.balancedButton.GetComponent<Button>().onClick.AddListener(() => selectClass(2));
     }
     
     void switchTeams(string teamSet){
@@ -151,33 +169,90 @@ public class PlayerStatsScript : NetworkBehaviour
     {
         print("ran serverpc t");
         isPlayerDead.Value = true;
-        arms.SetActive(false);
-        capsule.SetActive(false);
+        flipCharacter(false);
         playerDeathClientRpc();
     }
     [ClientRpc]
     void playerDeathClientRpc(){
         print("ran client t");
-        arms.SetActive(false);
-        capsule.SetActive(false);
+        flipCharacter(false);
     }
 
     [ServerRpc]
     void playerUnDeathServerRpc(){
         isPlayerDead.Value = false;
-        playerHealth.Value = 100;
-        arms.SetActive(true);
-        capsule.SetActive(true);
+        playerHealth.Value = maxPlayerHealth;
+        flipCharacter(true);
         playerUnDeathClientRpc();
         
     }
 
     [ClientRpc]
     void playerUnDeathClientRpc(){
-        arms.SetActive(true);
-        capsule.SetActive(true);
+        flipCharacter(true);
     }
 
+    // class stuff
+    void hideRevealClass(bool theBool){
+
+        if(theBool){
+            GameManager.crossHair.SetActive(false);
+            GameManager.selectCamera.SetActive(true);
+            GameManager.selectMenu.SetActive(true);
+        }
+        else{
+            GameManager.crossHair.SetActive(true);
+            GameManager.selectCamera.SetActive(false);
+            GameManager.selectMenu.SetActive(false);
+        }
+
+    }
+
+
+    public void selectClass(int classType)
+    {
+        Cursor.lockState = CursorLockMode.Locked;
+        selectClassServerRPC(classType);
+        flipCharacter(true);
+
+    }
+    [ServerRpc]
+    public void selectClassServerRPC(int theClass)
+    {
+        playerClass.Value = theClass;
+        //selected the clsas so set to a spawn or whatever.
+        gameObject.GetComponent<CharacterController>().enabled = false; //cant teleport the player without this schiesse
+        switch (teamName)
+        {
+            case "ceo":
+                print("ceo");
+                transform.position = GameObject.FindGameObjectWithTag("Env").GetComponent<EnvScript>().ceoRespawnLocations[Random.Range(0, GameObject.FindGameObjectWithTag("Env").GetComponent<EnvScript>().ceoRespawnLocations.Count - 1)].transform.position;  //probably not optimzed or whatever but did i ask?
+                break;
+            case "emp":
+                transform.position = GameObject.FindGameObjectWithTag("Env").GetComponent<EnvScript>().empRespawnLocations[Random.Range(0, GameObject.FindGameObjectWithTag("Env").GetComponent<EnvScript>().empRespawnLocations.Count - 1)].transform.position;  //probably not optimzed or whatever but did i ask?
+                break;
+        }
+        gameObject.GetComponent<CharacterController>().enabled = true;//cant teleport the player without this schiesse
+        flipCharacter(true);
+        GameManager.selectCamera.SetActive(false);
+        GameManager.selectMenu.SetActive(false);
+        gameObject.GetComponent<PlayerMovement>().isImobile = false;
+        switch(theClass){
+            case 1:
+                maxPlayerHealth = 75;
+                break;
+            case 2:
+                maxPlayerHealth = 100; //need to change these in playermovement as well )for the time being)
+                break;
+            case 3:
+                maxPlayerHealth = 200;
+                break;
+        }
+        playerHealth.Value = maxPlayerHealth;
+        print(playerHealth.Value);
+
+    } 
 }
+
 
 
