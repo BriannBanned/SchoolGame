@@ -7,7 +7,7 @@ public class PlayerMovement : NetworkBehaviour
     CharacterController controller;
 
     public float speed = 10f;
-    public float walkSpeed = 8;
+    public float walkSpeed = 8f;
     public float runSpeed = 15f;
 
     public float jumpheight = 3f;
@@ -30,6 +30,7 @@ public class PlayerMovement : NetworkBehaviour
         Debug.Log("player movement started wooow yoay oawolk");
         if (!IsOwner) return;
         playerCamera.SetActive(true);
+        
     }
 
 

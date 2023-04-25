@@ -14,7 +14,7 @@ public class ObjectExplosion : NetworkBehaviour
 
     public void takeDamage(int damage) {
         explosive = transform.gameObject;
-        print("Kaboom?");
+        //print("Kaboom?");
         objectHealth.Value -= damage;
         if(objectHealth.Value <= 0 ){
             explosiveDamage.Value = explosiveDamage.Value - objectHealth.Value;
@@ -45,6 +45,7 @@ public class ObjectExplosion : NetworkBehaviour
                 float dist = Vector3.Distance(explosive.transform.position, explodeCollider.transform.position);
                 if(Physics.Raycast(explosive.transform.position, dir, dist - 0.5f) == false) {
                     int disDa = Mathf.FloorToInt(dist);
+                    Debug.DrawRay(explosive.transform.position, dir * -10, Color.red, 10000f);
                     if(explodeCollider.transform.GetComponent<Collider>().tag == "Player") {
                         explodeCollider.transform.GetComponent<Collider>().GetComponent<PlayerStatsScript>().takeDamage(explosiveDamage - disDa);
                     }

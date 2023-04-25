@@ -21,25 +21,23 @@ public class PlayerStatsScript : NetworkBehaviour
     private float  cameraPrivate;
 
     private List<GameObject> deathCameras = new List<GameObject>();
+    private TextMeshProUGUI healthActual;
     private int deathCameraInt = 0;
     public TMP_Text healthText;
     public TMP_Text playerIDText;
     public TMP_Text teamIdText;
+    public float speeds;
     public string teamName = "noTeam";
-    public string className = "noClass";
     
 
     //ui creap doign erso quicky speed of light funni stat script
 
     public Button empButton;
     public Button ceoButton;
-    public Button heavyButton;
-    public Button midButton;
-    public Button lightButton;
 
     public void takeDamage(int damage)
     {
-        print("taking some damage m8!!!!");
+        //print("taking some damage m8!!!!");
         playerHealth.Value -= damage;
         if(playerHealth.Value < 0 ){
             playerHealth.Value = 0;
@@ -56,9 +54,7 @@ public class PlayerStatsScript : NetworkBehaviour
         print(_TeamUI + " timeam ui");
         empButton = _TeamUI.transform.Find("EmployeeButton").GetComponent<Button>();
         ceoButton = _TeamUI.transform.Find("CEOButton").GetComponent<Button>();
-        heavyButton = _ClassUI.transform.Find("HeavyButton").GetComponent<Button>();
-        midButton = _ClassUI.transform.Find("MidButton").GetComponent<Button>();
-        lightButton = _ClassUI.transform.Find("LightButton").GetComponent<Button>();
+        healthActual = _UI.transform.Find("Health").transform.Find("HealthActual").GetComponent<TextMeshProUGUI>();
         if(IsOwner  ){
             print("yes");
         }
@@ -68,9 +64,6 @@ public class PlayerStatsScript : NetworkBehaviour
         if(!IsOwner) return;
         empButton.onClick.AddListener(() => switchTeams("emp", _TeamUI));
         ceoButton.onClick.AddListener(() => switchTeams("ceo", _TeamUI));
-        heavyButton.onClick.AddListener(() => switchClass("heavy", _ClassUI));
-        midButton.onClick.AddListener(() => switchClass("medium", _ClassUI));
-        lightButton.onClick.AddListener(() => switchClass("light", _ClassUI));
     }
     
     void switchTeams(string teamSet, GameObject _TeamUI){
@@ -78,29 +71,17 @@ public class PlayerStatsScript : NetworkBehaviour
         switchServerRPC(teamSet);
         _TeamUI.SetActive(false);
     }
-    void switchClass(string classSet, GameObject _ClassUI){
-        print("swapped class??!");
-        switchClassServerRPC(classSet);
-        _ClassUI.SetActive(false);
-    }
     [ServerRpc(RequireOwnership = false)]
     void switchServerRPC(string teamSet){
         teamName = teamSet;
         switchClientRPC(teamSet);
-    }
-    [ServerRpc(RequireOwnership = false)]
-    void switchClassServerRPC(string classSet){
-        className = classSet;
-        switchClassClientRPC(classSet);
+        Cursor.lockState = CursorLockMode.Locked;
     }
     [ClientRpc]
     void switchClientRPC(string teamSet){
         teamName = teamSet;
     }
-    [ClientRpc]
-    void switchClassClientRPC(string classSet){
-        className = classSet;
-    }
+
 
   private void Update() {
 
@@ -123,7 +104,7 @@ public class PlayerStatsScript : NetworkBehaviour
                 }
             }
         }
-        healthText.text = playerHealth.Value.ToString();
+        healthActual.text = playerHealth.Value.ToString();
         if(Input.GetKeyDown(KeyCode.K)){
             Cursor.lockState = CursorLockMode.None;
         }

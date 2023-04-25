@@ -677,8 +677,12 @@ MonoBehaviour:
   playerIDText: {fileID: 3947936749523814799}
   teamIdText: {fileID: 2903487458607140487}
   teamName: noTeam
+  className: noClass
   empButton: {fileID: 0}
   ceoButton: {fileID: 0}
+  heavyButton: {fileID: 0}
+  midButton: {fileID: 0}
+  lightButton: {fileID: 0}
 --- !u!1 &5748428116537046492
 GameObject:
   m_ObjectHideFlags: 0
@@ -1534,8 +1538,24 @@ PrefabInstance:
       value: ak74
       objectReference: {fileID: 0}
     - target: {fileID: 3392372747815721835, guid: 42557dcf53adcf54d8e8d5981b76da5b, type: 3}
+      propertyPath: m_Layer
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 3392372747815721835, guid: 42557dcf53adcf54d8e8d5981b76da5b, type: 3}
       propertyPath: m_IsActive
       value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 3392407785335618933, guid: 42557dcf53adcf54d8e8d5981b76da5b, type: 3}
+      propertyPath: m_Layer
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 3392860526702175983, guid: 42557dcf53adcf54d8e8d5981b76da5b, type: 3}
+      propertyPath: m_Layer
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 3393375439288204603, guid: 42557dcf53adcf54d8e8d5981b76da5b, type: 3}
+      propertyPath: m_Layer
+      value: 0
       objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 42557dcf53adcf54d8e8d5981b76da5b, type: 3}
@@ -1677,13 +1697,37 @@ PrefabInstance:
       propertyPath: m_LocalEulerAnglesHint.z
       value: 0
       objectReference: {fileID: 0}
+    - target: {fileID: 5571167014082417595, guid: a97cd3c72b880dc4cac6086a682f9ef7, type: 3}
+      propertyPath: m_Layer
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 5571445790725910459, guid: a97cd3c72b880dc4cac6086a682f9ef7, type: 3}
+      propertyPath: m_Layer
+      value: 0
+      objectReference: {fileID: 0}
     - target: {fileID: 5571817405460750543, guid: a97cd3c72b880dc4cac6086a682f9ef7, type: 3}
       propertyPath: m_Name
       value: colt
       objectReference: {fileID: 0}
     - target: {fileID: 5571817405460750543, guid: a97cd3c72b880dc4cac6086a682f9ef7, type: 3}
+      propertyPath: m_Layer
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 5571817405460750543, guid: a97cd3c72b880dc4cac6086a682f9ef7, type: 3}
       propertyPath: m_IsActive
       value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 5571833944716327377, guid: a97cd3c72b880dc4cac6086a682f9ef7, type: 3}
+      propertyPath: m_Layer
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 5571887494109571921, guid: a97cd3c72b880dc4cac6086a682f9ef7, type: 3}
+      propertyPath: m_Layer
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 5572021843497384811, guid: a97cd3c72b880dc4cac6086a682f9ef7, type: 3}
+      propertyPath: m_Layer
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 5573910993752881307, guid: a97cd3c72b880dc4cac6086a682f9ef7, type: 3}
       propertyPath: m_LocalPosition.x

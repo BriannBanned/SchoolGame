@@ -76,7 +76,7 @@ public class weaponscript : NetworkBehaviour
     [ServerRpc]
     public void shootServerRPC()
     {
-        print("bang!!" + weaponID);
+        //print("bang!!" + weaponID);
         if (ammo.Value >= 1)
         {
             ammo.Value--;
@@ -86,10 +86,11 @@ public class weaponscript : NetworkBehaviour
             // Does the ray intersect any objects excluding the player layer (i dunno maybe/??)
             int mask = 1 << 5;
             mask = ~mask;
+
             if (Physics.Raycast(cameraTrans.position, cameraTrans.TransformDirection(Vector3.forward), out hit, Mathf.Infinity, mask)) //here error why what is going on (i found out its some thing owner everyone not being set)
             {
                 Debug.DrawRay(cameraTrans.position, cameraTrans.TransformDirection(Vector3.forward) * hit.distance, Color.yellow);
-                if(hit.collider.tag == "Player")
+                if(hit.collider.tag == "Player" && hit.collider.transform.parent.gameObject != transform.parent.gameObject)
                 {
                     print("hit player!");
                     if (hit.collider.GetComponent<PlayerStatsScript>().teamName == playerStats.teamName && playerStats.teamName != "noTeam")
