@@ -22,17 +22,29 @@ public class weaponscript : NetworkBehaviour
     //internal junk
     private bool canShoot = true;
     private float timerGun;
+    private bool canReload = true;
+    private float timerReload;
     private TextMeshProUGUI textReserve;
     private TextMeshProUGUI textAmmo;
     [SerializeField] private Transform cameraTrans;
     [SerializeField] private PlayerStatsScript playerStats;
+    [SerializeField] private AnimationClip gunShoot;
+    [SerializeField] private AnimationClip gunIdle;
+    [SerializeField] private AnimationClip gunReload;
+
+    [SerializeField] private float reloadTime;
+    private Animation anim;
 
     private void Start()
     {
+        anim = transform.parent.GetComponent<Animation>(); //hmm
         gameObject.SetActive(true);
         cameraTrans = transform.parent.parent.Find("Main Camera");
         playerStats = transform.parent.parent.parent.GetComponent<PlayerStatsScript>();
         if (!IsOwner) return; //this remember this crappy code VVVVV owner ^^^^^ everyone (camera wanst being set on all players so the players wont take damage because a raycast was impossible)
+        if(gunShoot != null) anim.AddClip(gunShoot, gunShoot.name);
+        if(gunIdle != null) anim.AddClip(gunIdle, gunIdle.name);
+        if(gunReload != null) anim.AddClip(gunReload, gunReload.name);
         GameObject _UI = GameObject.FindGameObjectWithTag("UI");
         textAmmo = _UI.transform.Find("Ammo").transform.Find("AmmoCount").GetComponent<TextMeshProUGUI>();
         textReserve = _UI.transform.Find("Ammo").transform.Find("ReserveCount").GetComponent<TextMeshProUGUI>();
@@ -49,6 +61,17 @@ public class weaponscript : NetworkBehaviour
         {
             canShoot = false;
             timerGun -= Time.deltaTime;
+        }
+        if (timerReload <= 0.0f)
+        {
+            //can shoot yessir!
+            canReload = true;
+        }
+        else
+        {
+            canReload = false;
+            canShoot = false;
+            timerReload -= Time.deltaTime;
         }
         //On Everyone ^^^
         if (!IsOwner) return; // anything ran before this line of code is ran on all clients but after its only ran on the person who owns it.
@@ -80,6 +103,10 @@ public class weaponscript : NetworkBehaviour
         if (ammo.Value >= 1)
         {
             ammo.Value--;
+            if(gunShoot != null){
+                anim.Play(gunShoot.name.ToString());
+            }
+            else print("GUNSHOOT NO EXISTIOSO!");
             timerGun = weaponCoolDown;
             RaycastHit hit;
             
@@ -111,6 +138,7 @@ public class weaponscript : NetworkBehaviour
     [ServerRpc]
     public void reloadGunServerRPC()
     {
+        if(!canReload) return;
         print("reload");
         if (ammo.Value > maxAmmo.Value)
         {
@@ -120,6 +148,11 @@ public class weaponscript : NetworkBehaviour
         {
             return;
         }
+        timerReload = reloadTime;
+        if(gunReload != null){
+            anim.Play(gunReload.name.ToString());
+        }
+        else print("GUNRELOAD NO EXISTIOSO!");
 
         if (maxAmmo.Value == ammo.Value && canOverfill == true && reserveAmmo.Value > 0)  
         {
