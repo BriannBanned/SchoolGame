@@ -36,8 +36,6 @@ public class PlayerStatsScript : NetworkBehaviour
     public void flipCharacter(bool flip){
         arms.SetActive(flip);
         capsule.SetActive(flip);
-        camera.SetActive(flip);
-        GameManager.crossHair.SetActive(flip);
     }
     
 
@@ -57,9 +55,8 @@ public class PlayerStatsScript : NetworkBehaviour
 
     private void Start()
     {
-        GameManager = GameObject.FindGameObjectWithTag("GameManager").GetComponent<gameManagerScript>();
-        hideRevealClass(true); //class thingy
-        flipCharacter(false);
+
+        GameManager = GameObject.FindGameObjectWithTag("GameManager").GetComponent<gameManagerScript>(); //class thingy
         playerIDText.text = gameObject.GetComponent<NetworkObject>().NetworkObjectId.ToString();
 
         GameObject _UI = GameObject.FindGameObjectWithTag("UI");
@@ -67,13 +64,12 @@ public class PlayerStatsScript : NetworkBehaviour
         print(_TeamUI + " timeam ui");
         empButton = _TeamUI.transform.Find("EmployeeButton").GetComponent<Button>();
         ceoButton = _TeamUI.transform.Find("CEOButton").GetComponent<Button>();
-        if(IsOwner  ){
-            print("yes");
-        }
-        else{
-            print("no");
-        }
+
         if(!IsOwner) return;
+        flipCharacter(false);
+        hideRevealClass(true);
+        camera.SetActive(false);
+        GameManager.crossHair.SetActive(false);
         empButton.onClick.AddListener(() => switchTeams("emp"));
         ceoButton.onClick.AddListener(() => switchTeams("ceo"));
         GameManager.lightButton.GetComponent<Button>().onClick.AddListener(() => selectClass(1));
@@ -95,7 +91,18 @@ public class PlayerStatsScript : NetworkBehaviour
         teamName = teamSet;
     }
 
-  private void Update() {
+    [ServerRpc]
+    private void updateDataServerRPC()
+    {
+
+    }
+    [ClientRpc]
+    private void updateDataClientRPC()
+    {
+
+    }
+
+    private void Update() {
 
         teamIdText.text = teamName;
 
@@ -212,9 +219,27 @@ public class PlayerStatsScript : NetworkBehaviour
 
     public void selectClass(int classType)
     {
-        Cursor.lockState = CursorLockMode.Locked;
-        selectClassServerRPC(classType);
         flipCharacter(true);
+        selectClassServerRPC(classType);
+        gameObject.GetComponent<CharacterController>().enabled = false; //cant teleport the player without this schiesse
+        switch (teamName)
+        {
+            case "ceo":
+                print("ceo");
+                transform.position = GameObject.FindGameObjectWithTag("Env").GetComponent<EnvScript>().ceoRespawnLocations[Random.Range(0, GameObject.FindGameObjectWithTag("Env").GetComponent<EnvScript>().ceoRespawnLocations.Count - 1)].transform.position;  //probably not optimzed or whatever but did i ask?
+                break;
+            case "emp":
+                transform.position = GameObject.FindGameObjectWithTag("Env").GetComponent<EnvScript>().empRespawnLocations[Random.Range(0, GameObject.FindGameObjectWithTag("Env").GetComponent<EnvScript>().empRespawnLocations.Count - 1)].transform.position;  //probably not optimzed or whatever but did i ask?
+                break;
+        }
+        gameObject.GetComponent<CharacterController>().enabled = true; //cant teleport the player without this schiesse
+        gameObject.GetComponent<PlayerMovement>().isImobile = false;
+        if (!IsOwner) return;
+        Cursor.lockState = CursorLockMode.Locked;
+        camera.SetActive(true);
+        GameManager.crossHair.SetActive(true);
+        GameManager.selectCamera.SetActive(false);
+        GameManager.selectMenu.SetActive(false);
 
     }
     [ServerRpc]
@@ -235,8 +260,6 @@ public class PlayerStatsScript : NetworkBehaviour
         }
         gameObject.GetComponent<CharacterController>().enabled = true;//cant teleport the player without this schiesse
         flipCharacter(true);
-        GameManager.selectCamera.SetActive(false);
-        GameManager.selectMenu.SetActive(false);
         gameObject.GetComponent<PlayerMovement>().isImobile = false;
         switch(theClass){
             case 1:

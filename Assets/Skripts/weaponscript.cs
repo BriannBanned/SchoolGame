@@ -21,9 +21,8 @@ public class weaponscript : NetworkBehaviour
     [SerializeField] private int weaponDamage;
     //internal junk
     private bool canShoot = true;
-    private float timerGun;
-    private bool canReload = true;
     private float timerReload;
+    private float timerGun;
     private TextMeshProUGUI textReserve;
     private TextMeshProUGUI textAmmo;
     [SerializeField] private Transform cameraTrans;
@@ -31,20 +30,23 @@ public class weaponscript : NetworkBehaviour
     [SerializeField] private AnimationClip gunShoot;
     [SerializeField] private AnimationClip gunIdle;
     [SerializeField] private AnimationClip gunReload;
+    [SerializeField] private AudioClip gunShootSound;
+    private AudioSource audSauce;
 
     [SerializeField] private float reloadTime;
     private Animation anim;
 
     private void Start()
     {
+        audSauce = GetComponent<AudioSource>();
         anim = transform.parent.GetComponent<Animation>(); //hmm
         gameObject.SetActive(true);
         cameraTrans = transform.parent.parent.Find("Main Camera");
         playerStats = transform.parent.parent.parent.GetComponent<PlayerStatsScript>();
+        if (gunShoot != null) anim.AddClip(gunShoot, gunShoot.name);
+        if (gunIdle != null) anim.AddClip(gunIdle, gunIdle.name);
+        if (gunReload != null) anim.AddClip(gunReload, gunReload.name);
         if (!IsOwner) return; //this remember this crappy code VVVVV owner ^^^^^ everyone (camera wanst being set on all players so the players wont take damage because a raycast was impossible)
-        if(gunShoot != null) anim.AddClip(gunShoot, gunShoot.name);
-        if(gunIdle != null) anim.AddClip(gunIdle, gunIdle.name);
-        if(gunReload != null) anim.AddClip(gunReload, gunReload.name);
         GameObject _UI = GameObject.FindGameObjectWithTag("UI");
         textAmmo = _UI.transform.Find("Ammo").transform.Find("AmmoCount").GetComponent<TextMeshProUGUI>();
         textReserve = _UI.transform.Find("Ammo").transform.Find("ReserveCount").GetComponent<TextMeshProUGUI>();
@@ -52,6 +54,13 @@ public class weaponscript : NetworkBehaviour
 
     private void Update()
     {
+        if(!anim.IsPlaying(gunShoot.name.ToString()) && !anim.IsPlaying(gunReload.name.ToString()) && !anim.IsPlaying(gunIdle.ToString()))
+        {
+            if(gunIdle != null){
+                anim.Play(gunIdle.name.ToString());
+            }
+            else print("gunidle NO EXISTIOSO!");
+        }
         if (timerGun <= 0.0f)
         {
             //can shoot yessir!
@@ -62,31 +71,22 @@ public class weaponscript : NetworkBehaviour
             canShoot = false;
             timerGun -= Time.deltaTime;
         }
-        if (timerReload <= 0.0f)
-        {
-            //can shoot yessir!
-            canReload = true;
-        }
-        else
-        {
-            canReload = false;
-            canShoot = false;
-            timerReload -= Time.deltaTime;
-        }
         //On Everyone ^^^
         if (!IsOwner) return; // anything ran before this line of code is ran on all clients but after its only ran on the person who owns it.
-        //On owner VVV
+                              //On owner VVV
         if (textAmmo != null)
         {
             textAmmo.text = ammo.Value.ToString();
             textReserve.text = reserveAmmo.Value.ToString();
         }   
         if(isAutomatic == true && Input.GetButton("Fire1") && canShoot == true){
+            timerGun = weaponCoolDown;
             shootServerRPC();
         }     
         else if (Input.GetButtonDown("Fire1") && canShoot == true)
         {
             //fire gun
+            timerGun = weaponCoolDown;
             shootServerRPC();
         }
         if (Input.GetKeyDown(KeyCode.R))
@@ -96,14 +96,37 @@ public class weaponscript : NetworkBehaviour
         }
     }
 
+    [ClientRpc]
+    void shootClientRPC()
+    {
+        timerGun = weaponCoolDown;
+        if (gunShootSound != null)
+        {
+            audSauce.PlayOneShot(gunShootSound);
+        }
+        if (gunShoot != null)
+        {
+            anim.Stop();
+            anim.Play(gunShoot.name.ToString());
+        }
+        else print("GUNSHOOT NO EXISTIOSO!");
+    }
+
+
     [ServerRpc]
     public void shootServerRPC()
     {
-        print("bang!!" + weaponID);
         if (ammo.Value >= 1)
         {
+            shootClientRPC();
+            if (gunShootSound != null)
+            {
+                audSauce.PlayOneShot(gunShootSound);
+            }
             ammo.Value--;
-            if(gunShoot != null){
+            if (gunShoot != null)
+            {
+                anim.Stop();
                 anim.Play(gunShoot.name.ToString());
             }
             else print("GUNSHOOT NO EXISTIOSO!");
@@ -118,10 +141,8 @@ public class weaponscript : NetworkBehaviour
                 Debug.DrawRay(cameraTrans.position, cameraTrans.TransformDirection(Vector3.forward) * hit.distance, Color.yellow);
                 if(hit.collider.tag == "Player")
                 {
-                    print("hit player!");
                     if (hit.collider.GetComponent<PlayerStatsScript>().teamName == playerStats.teamName && playerStats.teamName != "noTeam")
                     {
-                        print("nope firendlyfire!");
                         return; //dont do friendlyfire!
                     }
                     hit.collider.GetComponent<PlayerStatsScript>().takeDamage(weaponDamage);
@@ -134,10 +155,21 @@ public class weaponscript : NetworkBehaviour
             }
         }
     }
+
+    [ClientRpc]
+    void reloadGunClientRPC()
+    {
+        if (gunReload != null)
+        {
+            anim.Stop();
+            anim.Play(gunReload.name.ToString());
+        }
+        else print("GUNRELOAD NO EXISTIOSO!");
+    }
     [ServerRpc]
     public void reloadGunServerRPC()
     {
-        if(!canReload) return;
+        if(anim.IsPlaying(gunReload.name.ToString())) return;
         print("reload");
         if (ammo.Value > maxAmmo.Value)
         {
@@ -147,8 +179,10 @@ public class weaponscript : NetworkBehaviour
         {
             return;
         }
+        reloadGunClientRPC();
         timerReload = reloadTime;
         if(gunReload != null){
+            anim.Stop();
             anim.Play(gunReload.name.ToString());
         }
         else print("GUNRELOAD NO EXISTIOSO!");
