@@ -15,6 +15,4 @@ public class gameManagerScript : MonoBehaviour
     public GameObject heavyButton;
     public GameObject lightButton;
 
-
-
 }
