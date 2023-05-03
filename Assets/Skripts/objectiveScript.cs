@@ -1,8 +1,8 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
-
-public class objectiveScript : MonoBehaviour
+using Unity.Netcode;
+public class objectiveScript : NetworkBehaviour
 {
     [SerializeField] private GameObject papers;
     public string teamName;// what can capture this
@@ -19,14 +19,30 @@ public class objectiveScript : MonoBehaviour
     void OnTriggerEnter(Collider other)
     {
         if(other.gameObject.GetComponent<intelScript>()){
-            if(other.transform.parent.parent.gameObject.GetComponent<PlayerStatsScript>().teamName == teamName){
+            if(other.transform.parent.gameObject.GetComponent<PlayerStatsScript>().teamName == teamName){
                 //start the shredding countdown or whatever
                 gameManager.isShredderShredding = true;
-                Destroy(other.gameObject);
+                startShredderServerRPC();
             }
         }
     }
-     void Update() 
+
+    [ServerRpc(RequireOwnership = false)]
+    public void startShredderServerRPC()
+    {
+        gameManager.isShredderShredding = true;
+        Destroy(gameManager.empPapers.gameObject); // gotta keep these syned n wat not
+        startShredderClientRPC();
+    }
+    [ClientRpc]
+    public void startShredderClientRPC()
+    {
+        gameManager.isShredderShredding = true;
+        Destroy(gameManager.empPapers.gameObject);
+    }
+
+
+    void Update() 
      {
         transform.GetComponent<Animator>().SetBool("isShredding", gameManager.isShredderShredding);
         papers.GetComponent<Animator>().SetBool("isShredding", gameManager.isShredderShredding);
