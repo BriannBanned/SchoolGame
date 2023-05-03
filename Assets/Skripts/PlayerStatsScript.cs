@@ -30,14 +30,13 @@ public class PlayerStatsScript : NetworkBehaviour
     public string teamName = "noTeam";
     //clas vars
     private gameManagerScript GameManager;
+    [SerializeField] private GameObject ceoVest;
 
     //disableenable
     
     public void flipCharacter(bool flip){
         arms.SetActive(flip);
         capsule.SetActive(flip);
-        camera.SetActive(flip);
-        GameManager.crossHair.SetActive(flip);
     }
     
 
@@ -48,7 +47,6 @@ public class PlayerStatsScript : NetworkBehaviour
 
     public void takeDamage(int damage)
     {
-        print("taking some damage m8!!!!");
         playerHealth.Value -= damage;
         if(playerHealth.Value < 0 ){
             playerHealth.Value = 0;
@@ -57,23 +55,20 @@ public class PlayerStatsScript : NetworkBehaviour
 
     private void Start()
     {
-        GameManager = GameObject.FindGameObjectWithTag("GameManager").GetComponent<gameManagerScript>();
-        hideRevealClass(true); //class thingy
-        flipCharacter(false);
+
+        GameManager = GameObject.FindGameObjectWithTag("GameManager").GetComponent<gameManagerScript>(); //class thingy
         playerIDText.text = gameObject.GetComponent<NetworkObject>().NetworkObjectId.ToString();
 
         GameObject _UI = GameObject.FindGameObjectWithTag("UI");
         GameObject _TeamUI = GameObject.FindGameObjectWithTag("TeamUI");
-        print(_TeamUI + " timeam ui");
         empButton = _TeamUI.transform.Find("EmployeeButton").GetComponent<Button>();
         ceoButton = _TeamUI.transform.Find("CEOButton").GetComponent<Button>();
-        if(IsOwner  ){
-            print("yes");
-        }
-        else{
-            print("no");
-        }
+
         if(!IsOwner) return;
+        flipCharacter(false);
+        hideRevealClass(true);
+        camera.SetActive(false);
+        GameManager.crossHair.SetActive(false);
         empButton.onClick.AddListener(() => switchTeams("emp"));
         ceoButton.onClick.AddListener(() => switchTeams("ceo"));
         GameManager.lightButton.GetComponent<Button>().onClick.AddListener(() => selectClass(1));
@@ -82,7 +77,6 @@ public class PlayerStatsScript : NetworkBehaviour
     }
     
     void switchTeams(string teamSet){
-        print("is eine running");
         switchServerRPC(teamSet);
     }
     [ServerRpc(RequireOwnership = false)]
@@ -95,10 +89,29 @@ public class PlayerStatsScript : NetworkBehaviour
         teamName = teamSet;
     }
 
-  private void Update() {
+    [ServerRpc]
+    private void updateDataServerRPC()
+    {
+
+    }
+    [ClientRpc]
+    private void updateDataClientRPC()
+    {
+
+    }
+
+    private void Update() {
 
         teamIdText.text = teamName;
+        if(teamName == "ceo" && !IsOwner){
 
+            ceoVest.SetActive(true);
+
+        }
+        else
+        {
+            ceoVest.SetActive(false);
+        }
 
         //timer stuff
         if (playerHealth.Value <= 0 && isPlayerDead.Value == false){
@@ -135,7 +148,6 @@ public class PlayerStatsScript : NetworkBehaviour
                 switchCameraDeath();
             }
             if(respawnPrivate <= 0){
-                print("undead");
                 deathCameras[deathCameraInt].SetActive(false);
                 camera.SetActive(true);
                 switch (teamName)
@@ -148,7 +160,6 @@ public class PlayerStatsScript : NetworkBehaviour
                         break;
                 }
                 playerUnDeathServerRpc();
-                print(isPlayerDead.Value);
             }
       }
 
@@ -156,7 +167,6 @@ public class PlayerStatsScript : NetworkBehaviour
 
     void switchCameraDeath()
     {
-        print(deathCameraInt);
         deathCameras[deathCameraInt].SetActive(false);
         deathCameraInt++;
         if(deathCameraInt > deathCameras.Count -1){
@@ -168,14 +178,12 @@ public class PlayerStatsScript : NetworkBehaviour
     [ServerRpc]
     void playerDeathServerRpc()
     {
-        print("ran serverpc t");
         isPlayerDead.Value = true;
         flipCharacter(false);
         playerDeathClientRpc();
     }
     [ClientRpc]
     void playerDeathClientRpc(){
-        print("ran client t");
         flipCharacter(false);
     }
 
@@ -212,9 +220,26 @@ public class PlayerStatsScript : NetworkBehaviour
 
     public void selectClass(int classType)
     {
-        Cursor.lockState = CursorLockMode.Locked;
-        selectClassServerRPC(classType);
         flipCharacter(true);
+        selectClassServerRPC(classType);
+        gameObject.GetComponent<CharacterController>().enabled = false; //cant teleport the player without this schiesse
+        switch (teamName)
+        {
+            case "ceo":
+                transform.position = GameObject.FindGameObjectWithTag("Env").GetComponent<EnvScript>().ceoRespawnLocations[Random.Range(0, GameObject.FindGameObjectWithTag("Env").GetComponent<EnvScript>().ceoRespawnLocations.Count - 1)].transform.position;  //probably not optimzed or whatever but did i ask?
+                break;
+            case "emp":
+                transform.position = GameObject.FindGameObjectWithTag("Env").GetComponent<EnvScript>().empRespawnLocations[Random.Range(0, GameObject.FindGameObjectWithTag("Env").GetComponent<EnvScript>().empRespawnLocations.Count - 1)].transform.position;  //probably not optimzed or whatever but did i ask?
+                break;
+        }
+        gameObject.GetComponent<CharacterController>().enabled = true; //cant teleport the player without this schiesse
+        gameObject.GetComponent<PlayerMovement>().isImobile = false;
+        if (!IsOwner) return;
+        Cursor.lockState = CursorLockMode.Locked;
+        camera.SetActive(true);
+        GameManager.crossHair.SetActive(true);
+        GameManager.selectCamera.SetActive(false);
+        GameManager.selectMenu.SetActive(false);
 
     }
     [ServerRpc]
@@ -226,7 +251,6 @@ public class PlayerStatsScript : NetworkBehaviour
         switch (teamName)
         {
             case "ceo":
-                print("ceo");
                 transform.position = GameObject.FindGameObjectWithTag("Env").GetComponent<EnvScript>().ceoRespawnLocations[Random.Range(0, GameObject.FindGameObjectWithTag("Env").GetComponent<EnvScript>().ceoRespawnLocations.Count - 1)].transform.position;  //probably not optimzed or whatever but did i ask?
                 break;
             case "emp":
@@ -235,8 +259,6 @@ public class PlayerStatsScript : NetworkBehaviour
         }
         gameObject.GetComponent<CharacterController>().enabled = true;//cant teleport the player without this schiesse
         flipCharacter(true);
-        GameManager.selectCamera.SetActive(false);
-        GameManager.selectMenu.SetActive(false);
         gameObject.GetComponent<PlayerMovement>().isImobile = false;
         switch(theClass){
             case 1:
@@ -250,7 +272,6 @@ public class PlayerStatsScript : NetworkBehaviour
                 break;
         }
         playerHealth.Value = maxPlayerHealth;
-        print(playerHealth.Value);
 
     } 
 }
