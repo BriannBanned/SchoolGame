@@ -121,6 +121,7 @@ public class weaponscript : NetworkBehaviour
             shootClientRPC();
             if (gunShootSound != null)
             {
+                print("gunshootsound");
                 audSauce.PlayOneShot(gunShootSound);
             }
             ammo.Value--;
@@ -151,7 +152,6 @@ public class weaponscript : NetworkBehaviour
                 {
                     hit.collider.GetComponent<ObjectExplosion>().takeDamage(weaponDamage);
                 }
-                print(hit.collider.gameObject.name);
             }
         }
     }
