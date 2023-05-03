@@ -34,5 +34,8 @@ public class LookingAround : NetworkBehaviour
 
             playerCameraMove.localRotation = Quaternion.Euler(xRotation, 0f, 0f);
         }
+        if(Input.GetKey(KeyCode.Y)){
+            Cursor.lockState = CursorLockMode.None;
+        }
     }
 }

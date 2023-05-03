@@ -9,6 +9,8 @@ TagManager:
   - Env
   - DeathCameras
   - Explosive
+  - Destructible
+  - ClassScreen
   layers:
   - Default
   - TransparentFX
