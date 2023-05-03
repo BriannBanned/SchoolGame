@@ -15,6 +15,9 @@ public class gameManagerScript : MonoBehaviour
     public GameObject heavyButton;
     public GameObject lightButton;
 
+    //VV stuff for shredder
+    public GameObject empPapers;
 
+    public bool isShredderShredding = false;
 
 }

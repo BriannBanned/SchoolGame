@@ -30,6 +30,7 @@ public class PlayerStatsScript : NetworkBehaviour
     public string teamName = "noTeam";
     //clas vars
     private gameManagerScript GameManager;
+    [SerializeField] private GameObject ceoVest;
 
     //disableenable
     
@@ -46,7 +47,6 @@ public class PlayerStatsScript : NetworkBehaviour
 
     public void takeDamage(int damage)
     {
-        print("taking some damage m8!!!!");
         playerHealth.Value -= damage;
         if(playerHealth.Value < 0 ){
             playerHealth.Value = 0;
@@ -61,7 +61,6 @@ public class PlayerStatsScript : NetworkBehaviour
 
         GameObject _UI = GameObject.FindGameObjectWithTag("UI");
         GameObject _TeamUI = GameObject.FindGameObjectWithTag("TeamUI");
-        print(_TeamUI + " timeam ui");
         empButton = _TeamUI.transform.Find("EmployeeButton").GetComponent<Button>();
         ceoButton = _TeamUI.transform.Find("CEOButton").GetComponent<Button>();
 
@@ -78,7 +77,6 @@ public class PlayerStatsScript : NetworkBehaviour
     }
     
     void switchTeams(string teamSet){
-        print("is eine running");
         switchServerRPC(teamSet);
     }
     [ServerRpc(RequireOwnership = false)]
@@ -105,7 +103,15 @@ public class PlayerStatsScript : NetworkBehaviour
     private void Update() {
 
         teamIdText.text = teamName;
+        if(teamName == "ceo" && !IsOwner){
 
+            ceoVest.SetActive(true);
+
+        }
+        else
+        {
+            ceoVest.SetActive(false);
+        }
 
         //timer stuff
         if (playerHealth.Value <= 0 && isPlayerDead.Value == false){
@@ -142,7 +148,6 @@ public class PlayerStatsScript : NetworkBehaviour
                 switchCameraDeath();
             }
             if(respawnPrivate <= 0){
-                print("undead");
                 deathCameras[deathCameraInt].SetActive(false);
                 camera.SetActive(true);
                 switch (teamName)
@@ -155,7 +160,6 @@ public class PlayerStatsScript : NetworkBehaviour
                         break;
                 }
                 playerUnDeathServerRpc();
-                print(isPlayerDead.Value);
             }
       }
 
@@ -163,7 +167,6 @@ public class PlayerStatsScript : NetworkBehaviour
 
     void switchCameraDeath()
     {
-        print(deathCameraInt);
         deathCameras[deathCameraInt].SetActive(false);
         deathCameraInt++;
         if(deathCameraInt > deathCameras.Count -1){
@@ -175,14 +178,12 @@ public class PlayerStatsScript : NetworkBehaviour
     [ServerRpc]
     void playerDeathServerRpc()
     {
-        print("ran serverpc t");
         isPlayerDead.Value = true;
         flipCharacter(false);
         playerDeathClientRpc();
     }
     [ClientRpc]
     void playerDeathClientRpc(){
-        print("ran client t");
         flipCharacter(false);
     }
 
@@ -225,7 +226,6 @@ public class PlayerStatsScript : NetworkBehaviour
         switch (teamName)
         {
             case "ceo":
-                print("ceo");
                 transform.position = GameObject.FindGameObjectWithTag("Env").GetComponent<EnvScript>().ceoRespawnLocations[Random.Range(0, GameObject.FindGameObjectWithTag("Env").GetComponent<EnvScript>().ceoRespawnLocations.Count - 1)].transform.position;  //probably not optimzed or whatever but did i ask?
                 break;
             case "emp":
@@ -251,7 +251,6 @@ public class PlayerStatsScript : NetworkBehaviour
         switch (teamName)
         {
             case "ceo":
-                print("ceo");
                 transform.position = GameObject.FindGameObjectWithTag("Env").GetComponent<EnvScript>().ceoRespawnLocations[Random.Range(0, GameObject.FindGameObjectWithTag("Env").GetComponent<EnvScript>().ceoRespawnLocations.Count - 1)].transform.position;  //probably not optimzed or whatever but did i ask?
                 break;
             case "emp":
@@ -273,7 +272,6 @@ public class PlayerStatsScript : NetworkBehaviour
                 break;
         }
         playerHealth.Value = maxPlayerHealth;
-        print(playerHealth.Value);
 
     } 
 }
