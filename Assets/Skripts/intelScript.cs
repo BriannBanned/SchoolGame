@@ -16,7 +16,7 @@ public class intelScript : NetworkBehaviour
     }
     public void OnTriggerEnter(Collider col)
     {
-        if (col.gameObject.tag == "Player" && isCarried == false)
+        if (col.gameObject.tag == "Player" && isCarried == false && IsServer)
         {
             print("capture intel!");
             carryPoint = col.transform;

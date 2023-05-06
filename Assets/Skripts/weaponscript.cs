@@ -19,6 +19,8 @@ public class weaponscript : NetworkBehaviour
     [SerializeField] private bool isAutomatic;
     [SerializeField] private float weaponCoolDown;
     [SerializeField] private int weaponDamage;
+    [SerializeField] private bool usesAmmo; // nien ammo
+    [SerializeField] private bool isSpecial; // test variable please ignore.
     //internal junk
     private bool canShoot = true;
     private float timerReload;
@@ -76,23 +78,45 @@ public class weaponscript : NetworkBehaviour
                               //On owner VVV
         if (textAmmo != null)
         {
-            textAmmo.text = ammo.Value.ToString();
-            textReserve.text = reserveAmmo.Value.ToString();
+            if (usesAmmo)
+            {
+                textAmmo.text = ammo.Value.ToString();
+                textReserve.text = reserveAmmo.Value.ToString();
+            }
+            else
+            {
+                textAmmo.text = "inf";
+                textReserve.text = "";
+            }
         }   
         if(isAutomatic == true && Input.GetButton("Fire1") && canShoot == true){
             timerGun = weaponCoolDown;
-            shootServerRPC();
+            if (isSpecial)
+            {
+
+            }
+            else
+            {
+                shootServerRPC();
+            }
         }     
         else if (Input.GetButtonDown("Fire1") && canShoot == true)
         {
             //fire gun
             timerGun = weaponCoolDown;
-            shootServerRPC();
+            if (isSpecial)
+            {
+
+            }
+            else
+            {
+                shootServerRPC();
+            }
         }
         if (Input.GetKeyDown(KeyCode.R))
         {
             //reload
-            reloadGunServerRPC();
+            if(usesAmmo) reloadGunServerRPC();
         }
     }
 
@@ -116,7 +140,7 @@ public class weaponscript : NetworkBehaviour
     [ServerRpc]
     public void shootServerRPC()
     {
-        if (ammo.Value >= 1)
+        if (ammo.Value >= 1 || !usesAmmo)
         {
             shootClientRPC();
             if (gunShootSound != null)
@@ -124,7 +148,7 @@ public class weaponscript : NetworkBehaviour
                 print("gunshootsound");
                 audSauce.PlayOneShot(gunShootSound);
             }
-            ammo.Value--;
+            if(usesAmmo) ammo.Value--;
             if (gunShoot != null)
             {
                 anim.Stop();

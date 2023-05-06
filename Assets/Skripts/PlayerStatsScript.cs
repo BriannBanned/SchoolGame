@@ -28,6 +28,7 @@ public class PlayerStatsScript : NetworkBehaviour
     public TMP_Text playerIDText;
     public TMP_Text teamIdText;
     public string teamName = "noTeam";
+    public NetworkVariable<float> teamID = new NetworkVariable<float>(0); //1 is ceo 2 is employeeeeee 0 is nul
     //clas vars
     private gameManagerScript GameManager;
     [SerializeField] private GameObject ceoVest;
@@ -82,6 +83,15 @@ public class PlayerStatsScript : NetworkBehaviour
     [ServerRpc(RequireOwnership = false)]
     void switchServerRPC(string teamSet){
         teamName = teamSet;
+        switch (teamSet)
+        {
+            case "emp":
+                teamID.Value = 2;
+                break;
+            case "ceo":
+                teamID.Value = 1;
+                break;
+        }
         switchClientRPC(teamSet);
     }
     [ClientRpc]
@@ -150,12 +160,12 @@ public class PlayerStatsScript : NetworkBehaviour
             if(respawnPrivate <= 0){
                 deathCameras[deathCameraInt].SetActive(false);
                 camera.SetActive(true);
-                switch (teamName)
+                switch (teamID.Value)
                 {
-                    case "ceo":
+                    case 1:
                         transform.position = GameObject.FindGameObjectWithTag("Env").GetComponent<EnvScript>().ceoRespawnLocations[Random.Range(0, GameObject.FindGameObjectWithTag("Env").GetComponent<EnvScript>().ceoRespawnLocations.Count - 1)].transform.position;  //probably not optimzed or whatever but did i ask?
                         break;
-                    case "emp":
+                    case 2:
                         transform.position = GameObject.FindGameObjectWithTag("Env").GetComponent<EnvScript>().empRespawnLocations[Random.Range(0, GameObject.FindGameObjectWithTag("Env").GetComponent<EnvScript>().empRespawnLocations.Count - 1)].transform.position;  //probably not optimzed or whatever but did i ask?
                         break;
                 }

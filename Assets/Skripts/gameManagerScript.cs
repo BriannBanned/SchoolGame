@@ -20,4 +20,7 @@ public class gameManagerScript : MonoBehaviour
 
     public bool isShredderShredding = false;
 
+
+    public string[] weaponNums;
+
 }

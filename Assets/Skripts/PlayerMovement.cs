@@ -64,7 +64,11 @@ public class PlayerMovement : NetworkBehaviour
         }
         if (isImobile)
         {
+            gameObject.GetComponent<Rigidbody>().isKinematic = true;
             return;
+        }
+        else{
+          gameObject.GetComponent<Rigidbody>().isKinematic = false;  
         }
         if (!IsOwner) return;
 

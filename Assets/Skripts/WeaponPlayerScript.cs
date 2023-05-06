@@ -12,24 +12,35 @@ public class WeaponPlayerScript : NetworkBehaviour
     public GameObject secondaryObject = null;
     public GameObject Arms;
     public int selectedWeapon = 2;
+    private gameManagerScript GameManager; //ily game manager
+
+
 
     public GameObject[] weapons = new GameObject[] { };
     // Start is called before the first frame update
     void Start()
     {
+        GameManager = GameObject.FindGameObjectWithTag("GameManager").GetComponent<gameManagerScript>(); // thats all i needed to bus
         selectedWeapon = 1;
-        primary = "m48";
-        secondary = "colt";
-        secondaryObject = Arms.transform.Find("colt").gameObject;
-        primaryObject = Arms.transform.Find("ak74").gameObject;
-        secondaryObject.SetActive(true);
+        primary = "ak74";
+        secondary = "Uzi";
+        secondaryObject = Arms.transform.Find(secondary.ToString()).gameObject;
+        primaryObject = Arms.transform.Find(primary.ToString()).gameObject;
+
+        foreach(GameObject wep in weapons)
+        {
+            wep.SetActive(false);
+        }
+        
         switch(selectedWeapon){
             case 1:
             secondaryObject.SetActive(false);
+            primaryObject.SetActive(true);
             break;
 
             case 2:
             primaryObject.SetActive(false);
+            secondaryObject.SetActive(true);
             break;
         }
     }
@@ -54,6 +65,74 @@ public class WeaponPlayerScript : NetworkBehaviour
         }
     }
 
+
+    [ServerRpc(RequireOwnership = false)]
+    public void switchWeaponIDServerRPC(int weaponNumID, int slot){
+
+        switch (slot)
+        {
+
+            case 1:
+                //primary
+                primaryObject.SetActive(false);
+                primary = GameManager.weaponNums[weaponNumID];
+                secondaryObject = Arms.transform.Find(secondary.ToString()).gameObject;
+                primaryObject = Arms.transform.Find(primary.ToString()).gameObject;
+                break;
+            case 2:
+                //secondary
+                secondaryObject.SetActive(false);
+                secondary = GameManager.weaponNums[weaponNumID];
+                secondaryObject = Arms.transform.Find(secondary.ToString()).gameObject;
+                primaryObject = Arms.transform.Find(primary.ToString()).gameObject;
+                break;
+        }
+        switch (selectedWeapon)
+        {
+            case 1:
+                primaryObject.SetActive(true);
+                break;
+
+            case 2:
+                secondaryObject.SetActive(true);
+                break;
+        }
+        secondaryObject = Arms.transform.Find(secondary.ToString()).gameObject;
+        primaryObject = Arms.transform.Find(primary.ToString()).gameObject;
+        switchWeaponIDClientRPC(weaponNumID, slot);
+    }
+    [ClientRpc]
+    public void switchWeaponIDClientRPC(int weaponNumID, int slot){
+
+        switch(slot){
+
+            case 1:
+            //primary
+            primaryObject.SetActive(false);
+            primary = GameManager.weaponNums[weaponNumID];
+            secondaryObject = Arms.transform.Find(secondary.ToString()).gameObject;
+            primaryObject = Arms.transform.Find(primary.ToString()).gameObject;
+            break;
+            case 2:
+            //secondary
+            secondaryObject.SetActive(false);
+            secondary = GameManager.weaponNums[weaponNumID];
+            secondaryObject = Arms.transform.Find(secondary.ToString()).gameObject;
+            primaryObject = Arms.transform.Find(primary.ToString()).gameObject;
+            break;
+        }
+        switch(selectedWeapon){
+            case 1:
+            primaryObject.SetActive(true);
+            break;
+
+            case 2:
+            secondaryObject.SetActive(true);
+            break;
+        }
+        secondaryObject = Arms.transform.Find(secondary.ToString()).gameObject;
+        primaryObject = Arms.transform.Find(primary.ToString()).gameObject;
+    }
     [ServerRpc]
     public void switchPlayerWeaponServerRPC(int slot)
     {
